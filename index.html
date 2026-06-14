@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 Aprender é Divertido! — Entrar</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  font-family:'Nunito',sans-serif;min-height:100vh;
+  background:linear-gradient(135deg,#6C63FF 0%,#FF6584 50%,#43E97B 100%);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+}
+.bg-shape{position:absolute;border-radius:50%;opacity:.15;animation:floatShape 6s ease-in-out infinite;}
+.bg-shape:nth-child(1){width:200px;height:200px;background:#fff;top:-60px;left:-60px;animation-delay:0s;}
+.bg-shape:nth-child(2){width:150px;height:150px;background:#FFD700;top:10%;right:-40px;animation-delay:1s;}
+.bg-shape:nth-child(3){width:120px;height:120px;background:#FF6584;bottom:5%;left:5%;animation-delay:2s;}
+.bg-shape:nth-child(4){width:180px;height:180px;background:#43E97B;bottom:-50px;right:10%;animation-delay:3s;}
+@keyframes floatShape{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-20px) rotate(15deg);}}
+.float-emoji{position:absolute;font-size:2rem;animation:floatEmoji 4s ease-in-out infinite;user-select:none;pointer-events:none;}
+.fe1{top:8%;left:8%;animation-delay:0s;} .fe2{top:12%;right:12%;animation-delay:.7s;}
+.fe3{top:50%;left:2%;animation-delay:1.4s;} .fe4{bottom:15%;right:5%;animation-delay:2.1s;}
+.fe5{bottom:8%;left:30%;animation-delay:.3s;} .fe6{top:30%;right:3%;animation-delay:1.8s;}
+@keyframes floatEmoji{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-15px) scale(1.15);}}
+
+.login-card{
+  background:rgba(255,255,255,.97);border-radius:36px;padding:40px 32px;
+  max-width:440px;width:90%;text-align:center;
+  box-shadow:0 30px 80px rgba(0,0,0,.25),0 0 0 6px rgba(255,255,255,.3);
+  position:relative;z-index:10;animation:cardPop .6s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes cardPop{0%{transform:scale(.7) translateY(30px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.card-badge{
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,#FFD700,#FF8C42);border-radius:50px;
+  padding:7px 22px;font-family:'Fredoka One',cursive;font-size:.95rem;color:#fff;
+  box-shadow:0 4px 14px rgba(255,140,66,.5);white-space:nowrap;
+}
+.app-logo{font-size:4.5rem;margin-bottom:6px;display:block;animation:logoBounce 2s ease-in-out infinite;}
+@keyframes logoBounce{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-10px) rotate(5deg);}}
+.app-title{
+  font-family:'Fredoka One',cursive;font-size:2rem;
+  background:linear-gradient(135deg,#6C63FF,#FF6584);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:6px;
+}
+.app-sub{color:#888;font-size:.95rem;font-weight:700;margin-bottom:24px;line-height:1.5;}
+.features-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;}
+.feat-chip{background:#f3f0ff;border-radius:20px;padding:6px 12px;font-size:.78rem;font-weight:800;color:#6C63FF;}
+
+/* TABS */
+.auth-tabs{display:flex;gap:0;margin-bottom:20px;border-radius:14px;overflow:hidden;border:2px solid #eee;}
+.auth-tab{flex:1;padding:12px;border:none;background:#f5f5f5;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;transition:all .2s;color:#999;}
+.auth-tab.active{background:linear-gradient(135deg,#6C63FF,#FF6584);color:#fff;}
+
+/* FORMS */
+.auth-form{display:none;}
+.auth-form.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.field-group{margin-bottom:14px;text-align:left;}
+.field-group label{display:block;font-size:.82rem;font-weight:800;color:#555;margin-bottom:5px;}
+.field-input{
+  width:100%;padding:14px 16px;border:2.5px solid #e0e0e0;border-radius:14px;
+  font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+  outline:none;transition:border-color .2s;
+}
+.field-input:focus{border-color:#6C63FF;}
+.submit-btn{
+  width:100%;padding:16px;border:none;border-radius:14px;
+  background:linear-gradient(135deg,#6C63FF,#FF6584);color:#fff;
+  font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;box-shadow:0 6px 20px rgba(108,99,255,.4);
+  margin-top:4px;
+}
+.submit-btn:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 10px 28px rgba(108,99,255,.5);}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+.forgot-link{font-size:.82rem;color:#6C63FF;font-weight:800;cursor:pointer;margin-top:8px;display:inline-block;}
+.forgot-link:hover{text-decoration:underline;}
+
+/* MESSAGE */
+.auth-msg{
+  padding:12px 16px;border-radius:12px;font-size:.88rem;font-weight:700;
+  margin-top:12px;display:none;
+}
+.auth-msg.show{display:block;}
+.auth-msg.success{background:#d4edda;color:#155724;}
+.auth-msg.error{background:#f8d7da;color:#721c24;}
+.auth-msg.info{background:#d1ecf1;color:#0c5460;}
+
+.security-badge{margin-top:18px;padding:10px 16px;background:#f0fdf4;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:.76rem;font-weight:800;color:#16a34a;}
+
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#6C63FF,#FF6584);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:65px;height:65px;border:6px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="bg-shape"></div><div class="bg-shape"></div>
+<div class="bg-shape"></div><div class="bg-shape"></div>
+<div class="float-emoji fe1">⭐</div><div class="float-emoji fe2">🎓</div>
+<div class="float-emoji fe3">🔤</div><div class="float-emoji fe4">🎯</div>
+<div class="float-emoji fe5">🏆</div><div class="float-emoji fe6">📖</div>
+
+<div class="login-card">
+  <div class="card-badge">✨ Plataforma Educacional Infantil ✨</div>
+  <span class="app-logo">🎓</span>
+  <h1 class="app-title">Aprender é Divertido!</h1>
+  <p class="app-sub">Letras, números, inglês, bíblia e muito mais! 🚀</p>
+  <div class="features-row">
+    <div class="feat-chip">🔤 Fonética</div>
+    <div class="feat-chip">🔢 Matemática</div>
+    <div class="feat-chip">🇺🇸 Inglês</div>
+    <div class="feat-chip">🎯 Quiz</div>
+    <div class="feat-chip">📖 Bíblia</div>
+    <div class="feat-chip">🏆 Medalhas</div>
+  </div>
+
+  <div class="auth-tabs">
+    <button class="auth-tab active" onclick="switchTab('login',this)">🔑 Entrar</button>
+    <button class="auth-tab" onclick="switchTab('signup',this)">✨ Criar Conta</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <div class="auth-form active" id="form-login">
+    <div class="field-group">
+      <label>📧 E-mail</label>
+      <input class="field-input" id="login-email" type="email" placeholder="seu@email.com">
+    </div>
+    <div class="field-group">
+      <label>🔒 Senha</label>
+      <input class="field-input" id="login-pass" type="password" placeholder="••••••••">
+    </div>
+    <button class="submit-btn" id="btn-login" onclick="doLogin()">🚀 Entrar</button>
+    <div><span class="forgot-link" onclick="switchTab('reset',null)">Esqueci minha senha</span></div>
+    <div class="auth-msg" id="msg-login"></div>
+  </div>
+
+  <!-- SIGNUP FORM -->
+  <div class="auth-form" id="form-signup">
+    <div class="field-group">
+      <label>👤 Nome do responsável</label>
+      <input class="field-input" id="signup-name" type="text" placeholder="Nome completo">
+    </div>
+    <div class="field-group">
+      <label>📧 E-mail</label>
+      <input class="field-input" id="signup-email" type="email" placeholder="seu@email.com">
+    </div>
+    <div class="field-group">
+      <label>🔒 Senha (mínimo 6 caracteres)</label>
+      <input class="field-input" id="signup-pass" type="password" placeholder="••••••••">
+    </div>
+    <button class="submit-btn" id="btn-signup" onclick="doSignup()">✨ Criar Conta Grátis</button>
+    <div class="auth-msg" id="msg-signup"></div>
+  </div>
+
+  <!-- RESET FORM -->
+  <div class="auth-form" id="form-reset">
+    <p style="font-size:.9rem;color:#666;margin-bottom:16px;font-weight:700;">Digite seu e-mail para receber o link de redefinição de senha.</p>
+    <div class="field-group">
+      <label>📧 E-mail</label>
+      <input class="field-input" id="reset-email" type="email" placeholder="seu@email.com">
+    </div>
+    <button class="submit-btn" id="btn-reset" onclick="doReset()">📨 Enviar Link</button>
+    <div><span class="forgot-link" onclick="switchTab('login',null)">← Voltar ao login</span></div>
+    <div class="auth-msg" id="msg-reset"></div>
+  </div>
+
+  <div class="security-badge">🔒 Autenticação segura via Supabase</div>
+</div>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Entrando... 🚀</div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  CONFIGURAÇÃO SUPABASE
+//  Substitua com suas credenciais do projeto
+// ══════════════════════════════════════════
+// ══════════════════════════════════════════
+//  CONFIGURAÇÃO SUPABASE
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://gssnzxxhdkgjwbdfucra.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ua-Ztyoir3M_2UYM6L6uCA__z29oTZo';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══════════════════════════════════════════
+//  SE JÁ LOGADO E ASSINATURA ATIVA → VAI PRO APP
+// ══════════════════════════════════════════
+async function checkSession(){
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if(session){
+      // Verifica assinatura pelo EMAIL (id_usuario pode ser null no banco)
+      const { data: assin } = await sb
+        .from('assinaturas')
+        .select('status_assinatura')
+        .eq('email', session.user.email)
+        .single();
+
+      if(assin && ['active','paid'].includes(assin.status_assinatura)){
+        showLoading();
+        setTimeout(()=>{ window.location.href = 'app.html'; }, 600);
+      } else {
+        // Sessão existe mas assinatura inativa — desloga
+        await sb.auth.signOut();
+      }
+    }
+  } catch(e){ console.log('Erro ao verificar sessão:', e.message); }
+}
+checkSession();
+
+// ══════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════
+function switchTab(tab, btn){
+  document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('form-'+tab).classList.add('active');
+  if(btn) btn.classList.add('active');
+  else {
+    // Reset tab doesn't have a button — keep login tab highlighted
+    if(tab==='reset') document.querySelectorAll('.auth-tab')[0].classList.remove('active');
+  }
+  clearMsgs();
+}
+function clearMsgs(){ document.querySelectorAll('.auth-msg').forEach(m=>{m.classList.remove('show','success','error','info');m.textContent='';}); }
+
+// ══════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════
+async function doLogin(){
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const btn   = document.getElementById('btn-login');
+  const msg   = document.getElementById('msg-login');
+
+  if(!email || !pass){ showMsg(msg,'Por favor, preencha todos os campos! 😊','error'); return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Verificando...';
+
+  // PASSO 1 — Autenticar usuário
+  const { data: authData, error: authError } = await sb.auth.signInWithPassword({ email, password: pass });
+
+  if(authError){
+    let txt = '❌ Erro ao entrar. Verifique seus dados.';
+    if(authError.message.includes('Invalid login'))      txt = '❌ E-mail ou senha incorretos!';
+    if(authError.message.includes('Email not confirmed')) txt = '📧 Confirme seu e-mail antes de entrar!';
+    showMsg(msg, txt, 'error');
+    btn.disabled = false; btn.textContent = '🚀 Entrar';
+    return;
+  }
+
+  // PASSO 2 — Verificar assinatura pelo EMAIL (id_usuario pode ser null no banco)
+  const userEmail = authData.user.email;
+  const { data: assin, error: assinError } = await sb
+    .from('assinaturas')
+    .select('status_assinatura, plano')
+    .eq('email', userEmail)
+    .single();
+
+  // PASSO 3 — Validar status
+  if(assinError || !assin || !['active','paid'].includes(assin.status_assinatura)){
+    // Desloga imediatamente
+    await sb.auth.signOut();
+    let motivo = '❌ Sua assinatura expirou ou não foi encontrada.\n\nAcesse a Kiwify para renovar seu acesso.';
+    if(!assin) motivo = '❌ Nenhuma assinatura encontrada para este e-mail.\n\nRealize a compra na Kiwify para ter acesso.';
+    showMsg(msg, motivo.replace('\n\n',' '), 'error');
+    btn.disabled = false; btn.textContent = '🚀 Entrar';
+    return;
+  }
+
+  // PASSO 4 — Tudo ok, redireciona!
+  showMsg(msg, '✅ Assinatura ativa! Entrando...', 'success');
+  showLoading();
+  setTimeout(()=>{ window.location.href = 'app.html'; }, 800);
+}
+
+// ══════════════════════════════════════════
+//  CADASTRO
+// ══════════════════════════════════════════
+async function doSignup(){
+  const name  = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass  = document.getElementById('signup-pass').value;
+  const btn   = document.getElementById('btn-signup');
+  const msg   = document.getElementById('msg-signup');
+
+  if(!name || !email || !pass){ showMsg(msg,'Preencha todos os campos! 😊','error'); return; }
+  if(pass.length < 6){ showMsg(msg,'A senha precisa ter pelo menos 6 caracteres!','error'); return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Criando conta...';
+
+  const { data, error } = await sb.auth.signUp({
+    email, password: pass,
+    options: { data: { name } }
+  });
+
+  if(error){
+    let txt = '❌ Erro ao criar conta.';
+    if(error.message.includes('already registered')) txt = '❌ Este e-mail já está cadastrado!';
+    showMsg(msg, txt, 'error');
+    btn.disabled = false; btn.textContent = '✨ Criar Conta Grátis';
+  } else {
+    showMsg(msg,'🎉 Conta criada! Verifique seu e-mail para confirmar o cadastro.','success');
+    btn.disabled = false; btn.textContent = '✨ Criar Conta Grátis';
+  }
+}
+
+// ══════════════════════════════════════════
+//  RESET DE SENHA
+// ══════════════════════════════════════════
+async function doReset(){
+  const email = document.getElementById('reset-email').value.trim();
+  const btn   = document.getElementById('btn-reset');
+  const msg   = document.getElementById('msg-reset');
+
+  if(!email){ showMsg(msg,'Digite seu e-mail! 😊','error'); return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Enviando...';
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/app.html'
+  });
+
+  if(error){
+    showMsg(msg,'❌ Erro ao enviar. Verifique o e-mail digitado.','error');
+  } else {
+    showMsg(msg,'📨 Link enviado! Verifique sua caixa de entrada.','success');
+  }
+  btn.disabled = false; btn.textContent = '📨 Enviar Link';
+}
+
+// ══════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════
+function showMsg(el, txt, type){
+  el.textContent = txt;
+  el.className = 'auth-msg show ' + type;
+}
+function showLoading(){ document.getElementById('loading').classList.add('show'); }
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if(e.key === 'Enter'){
+    const active = document.querySelector('.auth-form.active');
+    if(active.id === 'form-login') doLogin();
+    else if(active.id === 'form-signup') doSignup();
+    else if(active.id === 'form-reset') doReset();
+  }
+});
+</script>
+</body>
+</html>

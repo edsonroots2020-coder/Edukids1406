@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 Aprender é Divertido!</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--purple:#7C3AED;--pink:#EC4899;--blue:#3B82F6;--green:#10B981;--yellow:#F59E0B;--red:#EF4444;--orange:#F97316;--teal:#14B8A6;--bg:#FFF8F0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;animation:fadeIn .35s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+#screen-setup{background:linear-gradient(135deg,#6C63FF 0%,#FF6584 60%,#43E97B 100%);display:flex;align-items:center;justify-content:center;padding:24px;}
+.setup-box{background:#fff;border-radius:32px;padding:40px 32px;max-width:440px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.setup-box .logo{font-size:4rem;margin-bottom:8px;}
+.setup-box h1{font-family:'Fredoka One',cursive;font-size:2rem;color:#333;margin-bottom:6px;}
+.setup-box p{color:#666;font-size:.95rem;margin-bottom:28px;}
+.setup-input{width:100%;padding:16px 20px;border:3px solid #e0e0e0;border-radius:16px;font-family:'Nunito',sans-serif;font-size:1.1rem;font-weight:700;outline:none;transition:border-color .2s;margin-bottom:14px;text-align:center;}
+.setup-input:focus{border-color:#6C63FF;}
+.setup-avatar-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px;}
+.av-opt{width:56px;height:56px;border-radius:50%;border:3px solid #eee;font-size:1.8rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;background:#f5f5f5;}
+.av-opt.selected,.av-opt:hover{border-color:#6C63FF;background:#ede9fe;transform:scale(1.1);}
+.setup-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,#6C63FF,#FF6584);color:#fff;font-family:'Fredoka One',cursive;font-size:1.2rem;cursor:pointer;transition:transform .2s;}
+.setup-btn:hover{transform:scale(1.03);}
+#screen-app{display:none;}
+#screen-app.active{display:flex;flex-direction:column;}
+.topbar{background:linear-gradient(135deg,#6C63FF,#FF6584);padding:12px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(0,0,0,.15);position:sticky;top:0;z-index:100;}
+.topbar-avatar{width:44px;height:44px;border-radius:50%;border:3px solid rgba(255,255,255,.6);font-size:1.6rem;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.2);cursor:pointer;flex-shrink:0;}
+.topbar-info{flex:1;}
+.topbar-name{font-family:'Fredoka One',cursive;color:#fff;font-size:1rem;line-height:1;}
+.topbar-stats{display:flex;gap:10px;margin-top:3px;}
+.stat-pill{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:.75rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:4px;}
+.topbar-btns{display:flex;gap:8px;}
+.topbar-icon-btn{width:40px;height:40px;border-radius:12px;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:1.2rem;cursor:pointer;transition:background .2s;}
+.topbar-icon-btn:hover{background:rgba(255,255,255,.35);}
+nav.main-nav{display:flex;flex-wrap:wrap;gap:8px;padding:12px 14px;background:#F3F0FF;border-bottom:3px solid #DDD6FE;justify-content:center;}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;border:none;border-radius:16px;cursor:pointer;font-family:'Fredoka One',cursive;font-size:.82rem;color:#fff;transition:transform .2s,box-shadow .2s;box-shadow:0 3px 10px rgba(0,0,0,.12);min-width:75px;}
+.nav-btn:hover,.nav-btn.active{transform:translateY(-3px) scale(1.05);box-shadow:0 8px 20px rgba(0,0,0,.18);}
+.nav-btn .icon{font-size:1.5rem;}
+.n1{background:linear-gradient(135deg,#FF6B9D,#FF8E53);}
+.n2{background:linear-gradient(135deg,#4776E6,#8E54E9);}
+.n3{background:linear-gradient(135deg,#11998e,#38ef7d);}
+.n4{background:linear-gradient(135deg,#f7971e,#ffd200);}
+.n5{background:linear-gradient(135deg,#c0392b,#e74c3c);}
+.n6{background:linear-gradient(135deg,#6a3093,#a044ff);}
+.n7{background:linear-gradient(135deg,#FC5C7D,#6A82FB);}
+.n8{background:linear-gradient(135deg,#0f2027,#2c5364);}
+.section{display:none;padding:18px 14px 60px;animation:fadeIn .35s ease;}
+.section.active{display:block;}
+.sec-title{font-family:'Fredoka One',cursive;font-size:clamp(1.4rem,4vw,2rem);text-align:center;margin-bottom:20px;padding:12px 20px;border-radius:50px;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.14);}
+/* Student area */
+.student-area{max-width:700px;margin:0 auto;}
+.student-hero{background:linear-gradient(135deg,#6C63FF,#FF6584);border-radius:28px;padding:28px;text-align:center;color:#fff;margin-bottom:20px;box-shadow:0 8px 30px rgba(108,99,255,.35);position:relative;overflow:hidden;}
+.student-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.1);}
+.student-hero-av{font-size:4rem;margin-bottom:8px;}
+.student-hero-name{font-family:'Fredoka One',cursive;font-size:1.8rem;}
+.student-hero-level{font-size:.9rem;opacity:.85;margin-top:4px;}
+.student-xp-bar-wrap{background:rgba(255,255,255,.25);border-radius:10px;height:14px;margin:12px 0 4px;overflow:hidden;}
+.student-xp-bar{height:100%;background:#FFD700;border-radius:10px;transition:width .8s ease;}
+.student-xp-label{font-size:.8rem;opacity:.9;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.stat-card{background:#fff;border-radius:18px;padding:16px 10px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.stat-card .stat-icon{font-size:1.8rem;}
+.stat-card .stat-val{font-family:'Fredoka One',cursive;font-size:1.4rem;color:#333;margin:4px 0;}
+.stat-card .stat-lbl{font-size:.72rem;font-weight:700;color:#888;}
+.medals-section,.cert-section{background:#fff;border-radius:22px;padding:20px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.medals-section h3,.cert-section h3{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#333;margin-bottom:14px;}
+.medals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;}
+.medal-card{border-radius:18px;padding:14px 8px;text-align:center;border:3px solid transparent;transition:transform .2s;}
+.medal-card.earned{background:linear-gradient(135deg,#FFF3CD,#FFEAA7);border-color:#F59E0B;cursor:pointer;}
+.medal-card.earned:hover{transform:scale(1.06);}
+.medal-card.locked{background:#f5f5f5;opacity:.55;filter:grayscale(1);}
+.medal-icon{font-size:2.2rem;display:block;}
+.medal-name{font-size:.72rem;font-weight:800;color:#555;margin-top:6px;line-height:1.3;}
+.medal-pts{font-size:.68rem;color:#F59E0B;font-weight:700;}
+.cert-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+.cert-card{background:linear-gradient(135deg,#667eea,#764ba2);border-radius:18px;padding:20px;color:#fff;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 4px 14px rgba(102,126,234,.35);}
+.cert-card:hover{transform:translateY(-4px);}
+.cert-card.locked{background:linear-gradient(135deg,#bbb,#999);opacity:.6;cursor:default;}
+.cert-icon{font-size:2.5rem;display:block;margin-bottom:8px;}
+.cert-name{font-family:'Fredoka One',cursive;font-size:1rem;}
+.cert-sub{font-size:.75rem;opacity:.85;margin-top:4px;}
+.cert-print{margin-top:12px;padding:8px 16px;border:2px solid rgba(255,255,255,.5);border-radius:20px;background:transparent;color:#fff;font-family:'Fredoka One',cursive;cursor:pointer;transition:background .2s;font-size:.85rem;}
+.cert-print:hover{background:rgba(255,255,255,.2);}
+/* Parents */
+.parents-panel{max-width:700px;margin:0 auto;}
+.parents-hero{background:linear-gradient(135deg,#0f2027,#2c5364);border-radius:28px;padding:24px;color:#fff;margin-bottom:20px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.25);}
+.parents-hero h2{font-family:'Fredoka One',cursive;font-size:1.6rem;margin-bottom:6px;}
+.parents-hero p{font-size:.9rem;opacity:.8;}
+.logout-btn-parent{margin-top:12px;padding:10px 24px;border:2px solid rgba(255,255,255,.4);border-radius:30px;background:transparent;color:#fff;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;transition:background .2s;}
+.logout-btn-parent:hover{background:rgba(255,255,255,.15);}
+.parents-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.p-stat{background:#fff;border-radius:18px;padding:18px 12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.p-stat .p-icon{font-size:2rem;}
+.p-stat .p-val{font-family:'Fredoka One',cursive;font-size:1.6rem;color:#333;margin:6px 0;}
+.p-stat .p-lbl{font-size:.75rem;font-weight:700;color:#888;line-height:1.3;}
+.modules-progress,.activity-log{background:#fff;border-radius:22px;padding:20px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.modules-progress h3,.activity-log h3{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#333;margin-bottom:16px;}
+.mod-row{margin-bottom:14px;}
+.mod-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.mod-name{font-weight:800;font-size:.9rem;color:#333;}
+.mod-pct{font-weight:800;font-size:.85rem;}
+.mod-bar-wrap{background:#eee;border-radius:8px;height:12px;overflow:hidden;}
+.mod-bar{height:100%;border-radius:8px;transition:width .8s ease;}
+.log-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;margin-bottom:8px;background:#f9f9f9;}
+.log-icon{font-size:1.4rem;}
+.log-txt{flex:1;font-size:.85rem;font-weight:700;color:#333;}
+.log-time{font-size:.75rem;color:#aaa;}
+/* Cards */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:14px;max-width:900px;margin:0 auto 24px;}
+.letter-card{background:#fff;border-radius:18px;padding:16px 10px;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 12px rgba(0,0,0,.09);border:3px solid transparent;}
+.letter-card:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 10px 24px rgba(0,0,0,.14);}
+.big-letter{font-family:'Fredoka One',cursive;font-size:2.8rem;line-height:1;display:block;}
+.lc-emoji{font-size:1.8rem;margin:6px 0;display:block;}
+.lc-word{font-size:.82rem;font-weight:800;color:#555;}
+.lc-phon{font-size:.72rem;color:#aaa;margin-top:3px;}
+.sound-btn{margin-top:8px;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;border-radius:16px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;}
+.info-box{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-radius:18px;padding:18px;margin:0 auto 22px;max-width:700px;text-align:center;box-shadow:0 6px 18px rgba(102,126,234,.35);}
+.info-box h3{font-family:'Fredoka One',cursive;font-size:1.4rem;margin-bottom:8px;}
+.info-box p{font-size:.92rem;line-height:1.6;}
+/* Math */
+.math-block{background:#fff;border-radius:20px;padding:20px;box-shadow:0 4px 14px rgba(0,0,0,.07);border-left:6px solid #4776E6;max-width:860px;margin:0 auto 18px;}
+.math-block h3{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#4776E6;margin-bottom:12px;}
+.nums-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.num-card{width:65px;height:65px;border-radius:14px;background:linear-gradient(135deg,#4776E6,#8E54E9);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;cursor:pointer;box-shadow:0 4px 10px rgba(71,118,230,.4);transition:transform .2s;}
+.num-card:hover{transform:scale(1.12) rotate(4deg);}
+.num-card .nn{font-family:'Fredoka One',cursive;font-size:1.7rem;line-height:1;}
+.num-card .nw{font-size:.58rem;font-weight:800;}
+.shapes-row{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;}
+.shape-item{text-align:center;cursor:pointer;transition:transform .2s;}
+.shape-item:hover{transform:scale(1.14) rotate(8deg);}
+.shape-svg{width:72px;height:72px;}
+.shape-name{font-family:'Fredoka One',cursive;font-size:.9rem;margin-top:5px;}
+.op-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+.op-card{background:linear-gradient(135deg,#f7971e,#ffd200);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 4px 10px rgba(247,151,30,.35);}
+.op-card:hover{transform:scale(1.07);}
+.op-sym{font-size:2.2rem;color:#333;font-family:'Fredoka One',cursive;}
+.op-nm{font-size:.8rem;font-weight:800;color:#555;}
+.op-ex{font-size:.88rem;font-weight:700;color:#333;margin-top:4px;}
+.medidas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;}
+/* English */
+.eng-tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;}
+.eng-tab{padding:9px 18px;border-radius:30px;border:none;background:#ddd;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;transition:all .2s;}
+.eng-tab.active,.eng-tab:hover{background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;transform:scale(1.04);}
+.eng-content{display:none;}
+.eng-content.active{display:block;animation:fadeIn .3s ease;}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;max-width:800px;margin:0 auto;}
+.vocab-card{background:#fff;border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 4px 10px rgba(0,0,0,.08);border-top:4px solid #11998e;}
+.vocab-card:hover{transform:translateY(-4px);}
+.v-emoji{font-size:2rem;}.v-en{font-family:'Fredoka One',cursive;font-size:.95rem;color:#11998e;}
+.v-pt{font-size:.75rem;font-weight:700;color:#666;margin-top:2px;}.v-ph{font-size:.68rem;color:#aaa;font-style:italic;}
+/* Sci/Geo */
+.sci-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:900px;margin:0 auto;}
+.sci-card{background:#fff;border-radius:18px;padding:18px;text-align:center;cursor:pointer;transition:transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.sci-card:hover{transform:translateY(-4px);}
+.sci-emoji{font-size:2.8rem;}.sci-card h4{font-family:'Fredoka One',cursive;font-size:.95rem;margin:7px 0 4px;}
+.sci-card p{font-size:.76rem;color:#666;line-height:1.4;}
+/* Bible */
+.bible-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;max-width:900px;margin:0 auto;}
+.bible-card{background:#fff;border-radius:20px;overflow:hidden;cursor:pointer;transition:transform .2s;box-shadow:0 4px 14px rgba(0,0,0,.1);}
+.bible-card:hover{transform:translateY(-5px);box-shadow:0 12px 28px rgba(0,0,0,.16);}
+.bible-head{padding:28px 18px;text-align:center;font-size:3.2rem;}
+.bible-body{padding:14px;}.bible-body h3{font-family:'Fredoka One',cursive;font-size:1rem;color:#333;margin-bottom:5px;}
+.bible-body p{font-size:.78rem;color:#666;line-height:1.5;}
+.play-story-btn{margin-top:10px;width:100%;padding:9px;border:none;border-radius:10px;background:linear-gradient(135deg,#6a3093,#a044ff);color:#fff;font-family:'Fredoka One',cursive;font-size:.9rem;cursor:pointer;transition:transform .2s;}
+.play-story-btn:hover{transform:scale(1.03);}
+/* Story modal */
+.story-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;align-items:center;justify-content:center;padding:14px;}
+.story-modal.open{display:flex;animation:fadeIn .3s ease;}
+.story-box{background:#fff;border-radius:24px;padding:28px;max-width:580px;width:100%;max-height:88vh;overflow-y:auto;position:relative;}
+.story-box h2{font-family:'Fredoka One',cursive;font-size:1.6rem;text-align:center;margin-bottom:14px;color:#6a3093;}
+.s-emoji{font-size:3.5rem;text-align:center;display:block;margin-bottom:10px;}
+.story-text{font-size:.95rem;line-height:1.8;color:#333;}
+.story-text .hl{color:#6a3093;font-weight:800;}
+.story-verse{background:linear-gradient(135deg,#f3e7ff,#ffe0f0);border-radius:14px;padding:14px;margin-top:14px;border-left:4px solid #6a3093;font-style:italic;font-size:.88rem;color:#555;}
+.story-ctrl{display:flex;gap:10px;margin-top:18px;justify-content:center;flex-wrap:wrap;}
+.s-btn{padding:11px 22px;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:.95rem;cursor:pointer;transition:transform .2s;}
+.s-btn:hover{transform:scale(1.04);}
+.s-play{background:linear-gradient(135deg,#6a3093,#a044ff);color:#fff;}
+.s-stop{background:linear-gradient(135deg,#e74c3c,#c0392b);color:#fff;}
+.s-close{background:#eee;color:#333;}
+/* Quiz */
+.quiz-wrap{max-width:680px;margin:0 auto;}
+.quiz-top{display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:16px;padding:14px 18px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,.07);}
+.q-score{font-family:'Fredoka One',cursive;font-size:1.3rem;color:#FC5C7D;}
+.q-prog{font-size:.85rem;font-weight:700;color:#666;}
+.prog-wrap{background:#eee;border-radius:8px;height:10px;margin-top:6px;overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,#FC5C7D,#6A82FB);border-radius:8px;transition:width .5s ease;}
+.q-filter{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:16px;}
+.f-btn{padding:7px 16px;border-radius:28px;border:2px solid #ccc;background:#fff;font-family:'Fredoka One',cursive;font-size:.8rem;cursor:pointer;transition:all .2s;}
+.f-btn.active{background:linear-gradient(135deg,#FC5C7D,#6A82FB);color:#fff;border-color:transparent;}
+.q-card{background:#fff;border-radius:22px;padding:26px;box-shadow:0 8px 24px rgba(0,0,0,.09);text-align:center;}
+.q-badge{display:inline-block;padding:5px 14px;border-radius:18px;font-size:.78rem;font-weight:800;margin-bottom:14px;color:#fff;}
+.q-emoji{font-size:3.2rem;margin-bottom:10px;display:block;}
+.q-question{font-family:'Fredoka One',cursive;font-size:clamp(1rem,3vw,1.4rem);color:#333;margin-bottom:20px;line-height:1.4;}
+.q-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.q-opt{padding:14px;border:3px solid #eee;border-radius:14px;background:#fff;font-family:'Nunito',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;}
+.q-opt:hover{border-color:#6A82FB;background:#f0f2ff;transform:scale(1.02);}
+.q-opt.correct{background:#d4edda;border-color:#28a745;color:#155724;transform:scale(1.03);}
+.q-opt.wrong{background:#f8d7da;border-color:#dc3545;color:#721c24;}
+.q-opt.disabled{pointer-events:none;opacity:.7;}
+.q-fb{margin-top:18px;padding:14px;border-radius:14px;font-weight:800;font-size:1rem;display:none;}
+.q-fb.show{display:block;animation:bounceIn .4s ease;}
+.q-fb.ok{background:#d4edda;color:#155724;}.q-fb.fail{background:#f8d7da;color:#721c24;}
+@keyframes bounceIn{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
+.q-next{margin-top:14px;padding:13px 30px;border:none;border-radius:50px;background:linear-gradient(135deg,#FC5C7D,#6A82FB);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;display:none;transition:transform .2s;}
+.q-next.show{display:inline-block;}.q-next:hover{transform:scale(1.05);}
+.q-result{text-align:center;padding:28px;display:none;}
+.q-result.show{display:block;animation:bounceIn .5s ease;}
+.res-emoji{font-size:4.5rem;}.res-title{font-family:'Fredoka One',cursive;font-size:1.8rem;margin:10px 0;color:#333;}
+.res-score{font-size:1.1rem;font-weight:700;color:#6A82FB;}
+.restart-btn{margin-top:18px;padding:13px 34px;border:none;border-radius:50px;background:linear-gradient(135deg,#FC5C7D,#6A82FB);color:#fff;font-family:'Fredoka One',cursive;font-size:1.1rem;cursor:pointer;transition:transform .2s;}
+.restart-btn:hover{transform:scale(1.05);}
+/* Cert modal */
+.cert-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;align-items:center;justify-content:center;padding:14px;}
+.cert-modal.open{display:flex;animation:fadeIn .3s ease;}
+.cert-paper{background:#fff;border-radius:24px;padding:40px 32px;max-width:500px;width:100%;text-align:center;border:8px double #6C63FF;box-shadow:0 20px 60px rgba(0,0,0,.3);position:relative;}
+.cert-paper::before{content:'🌟';position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:2.5rem;}
+.cert-title{font-family:'Fredoka One',cursive;font-size:2rem;color:#6C63FF;margin-bottom:4px;}
+.cert-subtitle{font-size:.85rem;color:#888;margin-bottom:20px;}
+.cert-name-disp{font-family:'Fredoka One',cursive;font-size:1.8rem;color:#333;border-bottom:3px solid #6C63FF;padding-bottom:8px;margin-bottom:14px;}
+.cert-body{font-size:1rem;color:#555;line-height:1.7;margin-bottom:16px;}
+.cert-award{background:linear-gradient(135deg,#FFF3CD,#FFEAA7);border-radius:14px;padding:14px;margin-bottom:16px;font-family:'Fredoka One',cursive;font-size:1.1rem;color:#333;}
+.cert-date{font-size:.8rem;color:#aaa;margin-bottom:20px;}
+.cert-close-btn{padding:12px 30px;border:none;border-radius:50px;background:linear-gradient(135deg,#6C63FF,#FF6584);color:#fff;font-family:'Fredoka One',cursive;font-size:1rem;cursor:pointer;}
+/* Toast & coin */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:linear-gradient(135deg,#6a3093,#a044ff);color:#fff;padding:12px 26px;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1rem;z-index:800;transition:transform .4s ease;box-shadow:0 8px 24px rgba(0,0,0,.22);white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.coin-anim{position:fixed;font-size:2rem;z-index:900;pointer-events:none;animation:coinFly 1s ease forwards;}
+@keyframes coinFly{0%{opacity:1;transform:scale(1) translateY(0);}100%{opacity:0;transform:scale(2) translateY(-80px);}}
+@media(max-width:480px){.q-opts{grid-template-columns:1fr;}.stats-row{grid-template-columns:repeat(2,1fr);}.parents-stats{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<!-- SETUP SCREEN -->
+<div id="screen-setup" class="screen active">
+  <div class="setup-box">
+    <div class="logo">🎓</div>
+    <h1>Olá! Vamos aprender?</h1>
+    <p>Crie seu perfil para começar a aventura! ✨</p>
+    <input class="setup-input" id="setup-name" type="text" placeholder="Qual é seu nome?" maxlength="20">
+    <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:#666;margin-bottom:10px;">Escolha seu avatar:</div>
+    <div class="setup-avatar-row" id="avatar-row"></div>
+    <div style="font-family:'Fredoka One',cursive;font-size:1rem;color:#666;margin:10px 0;">Quantos anos você tem?</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;" id="age-row"></div>
+    <button class="setup-btn" onclick="createProfile()">🚀 Começar a Aprender!</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" class="screen">
+  <div class="topbar">
+    <div class="topbar-avatar" id="tb-avatar" onclick="showSection('aluno')">🐻</div>
+    <div class="topbar-info">
+      <div class="topbar-name" id="tb-name">Aluno</div>
+      <div class="topbar-stats">
+        <span class="stat-pill">⭐ <span id="tb-stars">0</span></span>
+        <span class="stat-pill">🪙 <span id="tb-coins">0</span></span>
+        <span class="stat-pill">🔥 <span id="tb-streak">0</span>d</span>
+      </div>
+    </div>
+    <div class="topbar-btns">
+      <button class="topbar-icon-btn" onclick="downloadPDF()" title="Baixar PDF">📄</button>
+      <button class="topbar-icon-btn" onclick="showSection('pais')" title="Pais">👨‍👩‍👧</button>
+      <button class="topbar-icon-btn" onclick="confirmReset()" title="Reiniciar">🔄</button>
+    </div>
+  </div>
+
+  <nav class="main-nav">
+    <button class="nav-btn n1 active" onclick="showSection('fonetica',this)"><span class="icon">🔤</span>Fonética</button>
+    <button class="nav-btn n2" onclick="showSection('matematica',this)"><span class="icon">🔢</span>Matemática</button>
+    <button class="nav-btn n3" onclick="showSection('ingles',this)"><span class="icon">🇺🇸</span>Inglês</button>
+    <button class="nav-btn n4" onclick="showSection('ciencias',this)"><span class="icon">🔬</span>Ciências</button>
+    <button class="nav-btn n5" onclick="showSection('geo',this)"><span class="icon">🗺️</span>Geografia</button>
+    <button class="nav-btn n6" onclick="showSection('biblia',this)"><span class="icon">📖</span>Bíblia</button>
+    <button class="nav-btn n7" onclick="showSection('quiz',this)"><span class="icon">🎯</span>Quiz</button>
+    <button class="nav-btn n8" onclick="showSection('aluno',this)"><span class="icon">🏆</span>Perfil</button>
+  </nav>
+
+  <!-- FONÉTICA -->
+  <section id="sec-fonetica" class="section active">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#FF6B9D,#FF8E53)">🔤 Aprendendo as Letras!</h2>
+    <div class="info-box"><h3>💡 O que é Fonética?</h3><p>A <strong>fonética</strong> estuda os <strong>sons das letras</strong>! Clique em cada letra para ouvir o som! 🎵</p></div>
+    <div class="cards-grid" id="alphabet-grid"></div>
+    <h3 style="text-align:center;font-family:'Fredoka One',cursive;font-size:1.4rem;margin:20px 0 14px;color:#FF6B9D">🔗 Sílabas!</h3>
+    <div class="info-box" style="background:linear-gradient(135deg,#FF8E53,#FF6B9D)"><h3>📝 Juntando os Sons!</h3><p>Uma <strong>sílaba</strong> é uma parte de uma palavra. <strong>CA-SA</strong> tem 2 sílabas!</p></div>
+    <div class="cards-grid" id="silabas-grid"></div>
+  </section>
+
+  <!-- MATEMÁTICA -->
+  <section id="sec-matematica" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#4776E6,#8E54E9)">🔢 Matemática Divertida!</h2>
+    <div class="math-block"><h3>🔢 Números de 0 a 20</h3><div class="nums-row" id="nums-row"></div></div>
+    <div class="math-block" style="border-color:#8E54E9"><h3>🔵 Formas Geométricas</h3><div class="shapes-row" id="shapes-row"></div></div>
+    <div class="math-block" style="border-color:#38ef7d"><h3>➕ Operações</h3><div class="op-grid" id="op-grid"></div></div>
+    <div class="math-block" style="border-color:#ffd200"><h3>📏 Medidas</h3><div class="medidas-grid" id="medidas-grid"></div></div>
+  </section>
+
+  <!-- INGLÊS -->
+  <section id="sec-ingles" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#11998e,#38ef7d)">🇺🇸 Inglês para Crianças!</h2>
+    <div class="eng-tabs">
+      <button class="eng-tab active" onclick="showEngTab('colors',this)">🎨 Colors</button>
+      <button class="eng-tab" onclick="showEngTab('animals',this)">🐾 Animals</button>
+      <button class="eng-tab" onclick="showEngTab('numbers',this)">🔢 Numbers</button>
+      <button class="eng-tab" onclick="showEngTab('body',this)">👀 Body</button>
+      <button class="eng-tab" onclick="showEngTab('food',this)">🍎 Food</button>
+      <button class="eng-tab" onclick="showEngTab('greetings',this)">👋 Greetings</button>
+      <button class="eng-tab" onclick="showEngTab('alphabet',this)">🔤 Alphabet</button>
+    </div>
+    <div id="eng-colors" class="eng-content active"><div class="vocab-grid" id="g-colors"></div></div>
+    <div id="eng-animals" class="eng-content"><div class="vocab-grid" id="g-animals"></div></div>
+    <div id="eng-numbers" class="eng-content"><div class="vocab-grid" id="g-numbers"></div></div>
+    <div id="eng-body" class="eng-content"><div class="vocab-grid" id="g-body"></div></div>
+    <div id="eng-food" class="eng-content"><div class="vocab-grid" id="g-food"></div></div>
+    <div id="eng-greetings" class="eng-content"><div class="vocab-grid" id="g-greetings"></div></div>
+    <div id="eng-alphabet" class="eng-content"><div class="vocab-grid" id="g-alphabet"></div></div>
+  </section>
+
+  <!-- CIÊNCIAS -->
+  <section id="sec-ciencias" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#f7971e,#ffd200);color:#333">🔬 Ciências da Natureza!</h2>
+    <div class="sci-grid" id="sci-grid"></div>
+  </section>
+
+  <!-- GEOGRAFIA -->
+  <section id="sec-geo" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#c0392b,#e74c3c)">🗺️ Brasil e o Mundo!</h2>
+    <div class="sci-grid" id="geo-grid"></div>
+  </section>
+
+  <!-- BÍBLIA -->
+  <section id="sec-biblia" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#6a3093,#a044ff)">📖 Histórias Bíblicas!</h2>
+    <div class="info-box" style="background:linear-gradient(135deg,#6a3093,#a044ff)"><h3>🎙️ Histórias com Narração!</h3><p>Clique em <strong>"▶ Ouvir a História"</strong> para escutar a narração completa! 📖✨</p></div>
+    <div class="bible-grid" id="bible-grid"></div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="sec-quiz" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#FC5C7D,#6A82FB)">🎯 Quiz!</h2>
+    <div class="q-filter">
+      <button class="f-btn active" onclick="setFilter('all',this)">🌟 Todas</button>
+      <button class="f-btn" onclick="setFilter('port',this)">🔤 Português</button>
+      <button class="f-btn" onclick="setFilter('math',this)">🔢 Matemática</button>
+      <button class="f-btn" onclick="setFilter('eng',this)">🇺🇸 Inglês</button>
+      <button class="f-btn" onclick="setFilter('sci',this)">🔬 Ciências</button>
+      <button class="f-btn" onclick="setFilter('bib',this)">📖 Bíblia</button>
+      <button class="f-btn" onclick="setFilter('geo',this)">🗺️ Geografia</button>
+    </div>
+    <div class="quiz-wrap">
+      <div class="quiz-top">
+        <div class="q-score">⭐ <span id="score-disp">0</span> pts</div>
+        <div class="q-prog">Pergunta <span id="q-cur">1</span>/<span id="q-tot">10</span>
+          <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:10%"></div></div>
+        </div>
+      </div>
+      <div class="q-card" id="q-card">
+        <span class="q-badge" id="q-badge">📚</span>
+        <span class="q-emoji" id="q-emoji">🌟</span>
+        <div class="q-question" id="q-question">Carregando...</div>
+        <div class="q-opts" id="q-opts"></div>
+        <div class="q-fb" id="q-fb"></div>
+        <button class="q-next" id="q-next" onclick="nextQ()">Próxima ➡️</button>
+      </div>
+      <div class="q-result" id="q-result">
+        <div class="res-emoji" id="res-emoji">🏆</div>
+        <div class="res-title" id="res-title">Parabéns!</div>
+        <div class="res-score" id="res-score"></div>
+        <button class="restart-btn" onclick="restartQuiz()">🔄 Jogar de novo!</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PERFIL DO ALUNO -->
+  <section id="sec-aluno" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#6C63FF,#FF6584)">🏆 Meu Perfil!</h2>
+    <div class="student-area">
+      <div class="student-hero">
+        <div class="student-hero-av" id="sh-avatar">🐻</div>
+        <div class="student-hero-name" id="sh-name">Aluno</div>
+        <div class="student-hero-level" id="sh-level">⚡ Nível 1 — Explorador</div>
+        <div class="student-xp-bar-wrap"><div class="student-xp-bar" id="sh-xp-bar" style="width:0%"></div></div>
+        <div class="student-xp-label" id="sh-xp-label">0 / 100 XP</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-val" id="s-stars">0</div><div class="stat-lbl">Estrelas</div></div>
+        <div class="stat-card"><div class="stat-icon">🪙</div><div class="stat-val" id="s-coins">0</div><div class="stat-lbl">Moedas</div></div>
+        <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-val" id="s-streak">0</div><div class="stat-lbl">Dias seguidos</div></div>
+        <div class="stat-card"><div class="stat-icon">🎯</div><div class="stat-val" id="s-quizzes">0</div><div class="stat-lbl">Quizzes</div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-val" id="s-correct">0</div><div class="stat-lbl">Acertos</div></div>
+        <div class="stat-card"><div class="stat-icon">📚</div><div class="stat-val" id="s-activities">0</div><div class="stat-lbl">Atividades</div></div>
+        <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-val" id="s-time">0</div><div class="stat-lbl">Minutos</div></div>
+        <div class="stat-card"><div class="stat-icon">🏅</div><div class="stat-val" id="s-medals">0</div><div class="stat-lbl">Medalhas</div></div>
+      </div>
+      <div class="medals-section"><h3>🏅 Minhas Medalhas</h3><div class="medals-grid" id="medals-grid"></div></div>
+      <div class="cert-section"><h3>📜 Meus Certificados</h3><div class="cert-grid" id="certs-grid"></div></div>
+    </div>
+  </section>
+
+  <!-- PAINEL DOS PAIS -->
+  <section id="sec-pais" class="section">
+    <h2 class="sec-title" style="background:linear-gradient(135deg,#0f2027,#2c5364)">👨‍👩‍👧 Painel dos Pais</h2>
+    <div class="parents-panel">
+      <div class="parents-hero">
+        <h2>📊 Progresso do seu Filho</h2>
+        <p>Acompanhe o aprendizado de <span id="pp-name">seu filho</span> em tempo real!</p>
+        <button class="logout-btn-parent" onclick="doLogout()">🚪 Sair da conta</button>
+      </div>
+      <div class="parents-stats">
+        <div class="p-stat"><div class="p-icon">⏱️</div><div class="p-val" id="pp-time">0</div><div class="p-lbl">Min. estudados</div></div>
+        <div class="p-stat"><div class="p-icon">🎯</div><div class="p-val" id="pp-activities">0</div><div class="p-lbl">Atividades feitas</div></div>
+        <div class="p-stat"><div class="p-icon">✅</div><div class="p-val" id="pp-correct">0%</div><div class="p-lbl">Taxa de acertos</div></div>
+      </div>
+      <div class="parents-stats">
+        <div class="p-stat"><div class="p-icon">🔥</div><div class="p-val" id="pp-streak">0</div><div class="p-lbl">Dias consecutivos</div></div>
+        <div class="p-stat"><div class="p-icon">🏅</div><div class="p-val" id="pp-medals">0</div><div class="p-lbl">Medalhas</div></div>
+        <div class="p-stat"><div class="p-icon">⭐</div><div class="p-val" id="pp-level">1</div><div class="p-lbl">Nível atual</div></div>
+      </div>
+      <div class="modules-progress"><h3>📘 Progresso por Módulo</h3><div id="modules-bars"></div></div>
+      <div class="activity-log"><h3>📋 Últimas Atividades</h3><div id="activity-log-list"></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- STORY MODAL -->
+<div class="story-modal" id="story-modal">
+  <div class="story-box">
+    <span class="s-emoji" id="m-emoji">📖</span>
+    <h2 id="m-title">História</h2>
+    <div class="story-text" id="m-text"></div>
+    <div class="story-verse" id="m-verse"></div>
+    <div class="story-ctrl">
+      <button class="s-btn s-play" onclick="speakStory()">▶ Ouvir</button>
+      <button class="s-btn s-stop" onclick="stopSpeech()">⏹ Parar</button>
+      <button class="s-btn s-close" onclick="closeModal()">✖ Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CERT MODAL -->
+<div class="cert-modal" id="cert-modal">
+  <div class="cert-paper">
+    <div class="cert-title">Certificado de Conquista</div>
+    <div class="cert-subtitle">🌟 Aprender é Divertido! 🌟</div>
+    <div class="cert-name-disp" id="cert-name-disp">Nome</div>
+    <div class="cert-body">concluiu com êxito e dedicação o módulo de</div>
+    <div class="cert-award" id="cert-award-disp">🏆 Conquista</div>
+    <div class="cert-date" id="cert-date-disp">Data</div>
+    <button class="cert-close-btn" onclick="document.getElementById('cert-modal').classList.remove('open')">✖ Fechar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">🎵</div>
+
+<script>
+// ═══════════════════ SUPABASE CONFIG ═══════════════════
+// Substitua com suas credenciais do projeto Supabase
+// ══════════════════════════════════════════
+//  CONFIGURAÇÃO SUPABASE
+// ══════════════════════════════════════════
+const SUPABASE_URL = 'https://gssnzxxhdkgjwbdfucra.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ua-Ztyoir3M_2UYM6L6uCA__z29oTZo';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══════════════════════════════════════════
+//  PROTEÇÃO DE ROTA — roda ao carregar a página
+//  Garante: sem sessão ou assinatura inativa → login
+// ══════════════════════════════════════════
+async function checkAuth(){
+  try {
+    // 1. Verifica sessão ativa
+    const { data: { session } } = await sb.auth.getSession();
+
+    if(!session){
+      // Sem sessão → volta para login
+      window.location.replace('index.html');
+      return;
+    }
+
+    // 2. Verifica assinatura pelo EMAIL (id_usuario pode ser null no banco)
+    const { data: assin, error } = await sb
+      .from('assinaturas')
+      .select('status_assinatura')
+      .eq('email', session.user.email)
+      .single();
+
+    if(error || !assin || !['active','paid'].includes(assin.status_assinatura)){
+      // Assinatura inativa ou não encontrada → desloga e bloqueia
+      await sb.auth.signOut();
+      window.location.replace('index.html');
+      return;
+    }
+
+    // 3. Tudo ok — armazena usuário atual para uso no app
+    window._currentUser = session.user;
+
+  } catch(e){
+    // Erro de rede → bloqueia por segurança
+    console.error('Erro no checkAuth:', e.message);
+    window.location.replace('index.html');
+  }
+}
+checkAuth(); // proteção de rota ativa
+
+// ══════════════════════════════════════════
+//  MONITORAMENTO CONTÍNUO DE SESSÃO
+//  Se a sessão expirar enquanto o app está aberto → login
+// ══════════════════════════════════════════
+sb.auth.onAuthStateChange(async (event, session) => {
+  if(event === 'SIGNED_OUT' || !session){
+    window.location.replace('index.html');
+  }
+  if(event === 'TOKEN_REFRESHED' && session){
+    // Revalida assinatura quando o token é renovado
+    const { data: assin } = await sb
+      .from('assinaturas')
+      .select('status_assinatura')
+      .eq('id_usuario', session.user.id)
+      .single();
+    if(!assin || !['active','paid'].includes(assin.status_assinatura)){
+      await sb.auth.signOut();
+      window.location.replace('index.html');
+    }
+  }
+});
+
+// ═══════════════════ STORAGE ═══════════════════
+// ══════════════════════════════════════════
+//  LINK DO E-BOOK PDF — Coloque aqui o link do seu arquivo
+// ══════════════════════════════════════════
+const PDF_DOWNLOAD_URL = 'https://drive.google.com/drive/folders/1KClazukZgCjTtuYo_RHU3vGXAkVHg-hz'; // <-- SUBSTITUA pelo link real
+
+function downloadPDF(){
+  if(!PDF_DOWNLOAD_URL || PDF_DOWNLOAD_URL.includes('exemplo.com')){
+    toast('📄 Link do PDF ainda não configurado!');
+    return;
+  }
+  window.open(PDF_DOWNLOAD_URL, '_blank');
+  toast('📄 Abrindo seu e-book em PDF...');
+  P.modules.pdf = (P.modules.pdf||0) + 1;
+  logActivity('Baixou o e-book PDF');
+  addReward(2,2,10,'Download do e-book');
+}
+
+const SAVE_KEY='edu_crianca_v3';
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE_KEY))||null;}catch(e){return null;}}
+function writeSave(d){localStorage.setItem(SAVE_KEY,JSON.stringify(d));}
+function defaultSave(name,avatar,age){
+  return{name,avatar,age,created:Date.now(),lastVisit:Date.now(),
+    stars:0,coins:0,xp:0,level:1,streak:1,totalDays:1,
+    quizzesDone:0,correctAnswers:0,wrongAnswers:0,activitiesCount:0,minutesStudied:0,
+    modules:{fonetica:0,matematica:0,ingles:0,ciencias:0,geo:0,biblia:0,quiz:0},
+    earnedMedals:[],earnedCerts:[],activityLog:[],sessionStart:Date.now()};
+}
+let P=null;
+function saveProfile(){if(P)writeSave(P);}
+
+// ═══════════════════ SETUP ═══════════════════
+const AVATARS=['🐻','🐱','🦊','🐸','🦁','🐧','🦄','🐺','🐨','🦋','🐬','🦖'];
+const AGES=[4,5,6,7,8,9,10];
+let selAvatar=AVATARS[0],selAge=6;
+
+function buildSetup(){
+  const ar=document.getElementById('avatar-row');
+  AVATARS.forEach((a,i)=>{
+    const d=document.createElement('div');d.className='av-opt'+(i===0?' selected':'');d.textContent=a;
+    d.onclick=()=>{document.querySelectorAll('.av-opt').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');selAvatar=a;};
+    ar.appendChild(d);
+  });
+  const ageRow=document.getElementById('age-row');
+  AGES.forEach((age,i)=>{
+    const b=document.createElement('button');
+    b.style.cssText='padding:8px 18px;border-radius:20px;border:2px solid '+(i===2?'#6C63FF':'#ccc')+';background:'+(i===2?'#ede9fe':'#fff')+';font-family:Fredoka One,cursive;font-size:1rem;cursor:pointer;transition:all .2s;';
+    b.textContent=age+' anos';
+    b.onclick=()=>{document.querySelectorAll('#age-row button').forEach(x=>{x.style.borderColor='#ccc';x.style.background='#fff';});b.style.borderColor='#6C63FF';b.style.background='#ede9fe';selAge=age;};
+    ageRow.appendChild(b);
+  });
+}
+function createProfile(){
+  const name=document.getElementById('setup-name').value.trim();
+  if(!name){toast('Por favor, escreva seu nome! 😊');return;}
+  P=defaultSave(name,selAvatar,selAge);saveProfile();launchApp();
+}
+function launchApp(){
+  document.getElementById('screen-setup').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  updateTopbar();checkStreak();startSessionTimer();renderStudentArea();renderParentsPanel();
+}
+
+// ═══════════════════ SESSION TIMER ═══════════════════
+let sessionInterval=null;
+function startSessionTimer(){
+  P.sessionStart=Date.now();
+  sessionInterval=setInterval(()=>{P.minutesStudied++;saveProfile();renderParentsPanel();document.getElementById('s-time').textContent=P.minutesStudied;},60000);
+}
+
+// ═══════════════════ STREAK ═══════════════════
+function checkStreak(){
+  const last=new Date(P.lastVisit),now=new Date();
+  const diff=Math.floor((now-last)/(1000*60*60*24));
+  if(diff===1){P.streak++;P.totalDays++;}else if(diff>1){P.streak=1;P.totalDays++;}
+  P.lastVisit=Date.now();saveProfile();
+}
+
+// ═══════════════════ REWARDS ═══════════════════
+function addReward(stars,coins,xpAmt,source=''){
+  P.stars+=stars;P.coins+=coins;P.xp+=xpAmt;P.activitiesCount++;
+  if(source)logActivity(source);
+  checkLevelUp();checkMedals();saveProfile();updateTopbar();renderStudentArea();
+}
+function logActivity(txt){
+  P.activityLog.unshift({txt,time:new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})});
+  if(P.activityLog.length>20)P.activityLog.pop();
+}
+const LEVEL_XP=[0,100,250,450,700,1000,1400,1900,2500,3200,4000];
+function getLevel(xp){for(let i=LEVEL_XP.length-1;i>=0;i--)if(xp>=LEVEL_XP[i])return i+1;return 1;}
+const LEVEL_NAMES=['','Explorador','Aprendiz','Curioso','Estudante','Sábio','Gênio','Mestre','Campeão','Lendário','DEUS DO SABER'];
+function checkLevelUp(){const l=Math.min(getLevel(P.xp),10);if(l>P.level){P.level=l;toast('🎉 Subiu de nível! Agora você é '+LEVEL_NAMES[l]+'! ⚡');spawnCoin('⬆️');checkCerts();}}
+function spawnCoin(em='🪙'){const d=document.createElement('div');d.className='coin-anim';d.textContent=em;d.style.cssText='left:'+(40+Math.random()*20)+'%;bottom:60px;';document.body.appendChild(d);setTimeout(()=>d.remove(),1100);}
+
+// ═══════════════════ MEDALS ═══════════════════
+const ALL_MEDALS=[
+  {id:'first_click',icon:'🌟',name:'Primeira Exploração',desc:'Clicou em sua primeira letra!',pts:10},
+  {id:'vowels',icon:'🔤',name:'Mestre das Vogais',desc:'Explorou A,E,I,O,U',pts:20},
+  {id:'silabas',icon:'📝',name:'Mestre das Sílabas',desc:'Explorou 5 sílabas',pts:20},
+  {id:'first_quiz',icon:'🎯',name:'Primeiro Quiz',desc:'Completou seu primeiro quiz!',pts:30},
+  {id:'quiz10',icon:'🏆',name:'10 Quizzes!',desc:'Completou 10 quizzes',pts:50},
+  {id:'perfect',icon:'💎',name:'Perfeito!',desc:'10/10 num quiz!',pts:100},
+  {id:'streak3',icon:'🔥',name:'3 Dias Seguidos',desc:'Estudou 3 dias seguidos!',pts:30},
+  {id:'streak7',icon:'🔥',name:'Semana Completa!',desc:'Estudou 7 dias seguidos!',pts:80},
+  {id:'math_star',icon:'🔢',name:'Matemático Júnior',desc:'Explorou os números',pts:25},
+  {id:'bible_reader',icon:'📖',name:'Leitor Bíblico',desc:'Ouviu 3 histórias bíblicas',pts:30},
+  {id:'english_star',icon:'🇺🇸',name:'Falante de Inglês',desc:'Explorou 20 palavras',pts:25},
+  {id:'coins100',icon:'🪙',name:'Colecionador',desc:'Acumulou 100 moedas!',pts:20},
+  {id:'level5',icon:'⚡',name:'Nível 5!',desc:'Atingiu o nível 5!',pts:60},
+  {id:'activities50',icon:'📚',name:'50 Atividades!',desc:'Realizou 50 atividades!',pts:70},
+  {id:'science_curious',icon:'🔬',name:'Cientista Curioso',desc:'Explorou 5 temas de ciências',pts:25},
+  {id:'geo_explorer',icon:'🗺️',name:'Geógrafo Júnior',desc:'Explorou 5 temas de geografia',pts:25},
+];
+let MC={vowels:new Set(),sil:0,stories:0,eng:0,sci:0,geo:0};
+
+function checkMedals(){
+  const earn=id=>{
+    if(!P.earnedMedals.includes(id)){
+      P.earnedMedals.push(id);
+      const m=ALL_MEDALS.find(x=>x.id===id);
+      if(m){toast('🏅 Medalha: '+m.name+'! +'+m.pts+' pts');spawnCoin('🏅');P.stars+=m.pts;P.coins+=Math.floor(m.pts/2);}
+      saveProfile();renderStudentArea();
+    }
+  };
+  if(P.activitiesCount>=1)earn('first_click');
+  if(MC.vowels.size>=5)earn('vowels');
+  if(MC.sil>=5)earn('silabas');
+  if(P.quizzesDone>=1)earn('first_quiz');
+  if(P.quizzesDone>=10)earn('quiz10');
+  if(P.streak>=3)earn('streak3');
+  if(P.streak>=7)earn('streak7');
+  if(P.modules.matematica>=5)earn('math_star');
+  if(MC.stories>=3)earn('bible_reader');
+  if(MC.eng>=20)earn('english_star');
+  if(P.coins>=100)earn('coins100');
+  if(P.level>=5)earn('level5');
+  if(P.activitiesCount>=50)earn('activities50');
+  if(MC.sci>=5)earn('science_curious');
+  if(MC.geo>=5)earn('geo_explorer');
+}
+
+// ═══════════════════ CERTIFICATES ═══════════════════
+const ALL_CERTS=[
+  {id:'cert_fonetica',icon:'🔤',name:'Fonética Completa',req:'Explorou todas as letras',unlock:()=>P.modules.fonetica>=26},
+  {id:'cert_math',icon:'🔢',name:'Matemático Júnior',req:'Concluiu Matemática',unlock:()=>P.modules.matematica>=10},
+  {id:'cert_english',icon:'🇺🇸',name:'Inglês Iniciante',req:'Aprendeu 30 palavras',unlock:()=>MC.eng>=30},
+  {id:'cert_bible',icon:'📖',name:'Leitor Bíblico',req:'Ouviu 10 histórias',unlock:()=>MC.stories>=10},
+  {id:'cert_quiz',icon:'🎯',name:'Campeão do Quiz',req:'Completou 5 quizzes',unlock:()=>P.quizzesDone>=5},
+  {id:'cert_geral',icon:'🏆',name:'Aprendiz Completo',req:'Atingiu o nível 5',unlock:()=>P.level>=5},
+];
+function checkCerts(){
+  ALL_CERTS.forEach(c=>{
+    if(!P.earnedCerts.includes(c.id)&&c.unlock()){
+      P.earnedCerts.push(c.id);toast('📜 Certificado: '+c.name+'!');spawnCoin('📜');saveProfile();renderStudentArea();
+    }
+  });
+}
+
+// ═══════════════════ UI UPDATES ═══════════════════
+function updateTopbar(){
+  document.getElementById('tb-avatar').textContent=P.avatar;
+  document.getElementById('tb-name').textContent=P.name;
+  document.getElementById('tb-stars').textContent=P.stars;
+  document.getElementById('tb-coins').textContent=P.coins;
+  document.getElementById('tb-streak').textContent=P.streak;
+}
+function renderStudentArea(){
+  if(!P)return;
+  document.getElementById('sh-avatar').textContent=P.avatar;
+  document.getElementById('sh-name').textContent=P.name;
+  const lvl=Math.min(getLevel(P.xp),10);P.level=lvl;
+  document.getElementById('sh-level').textContent='⚡ Nível '+lvl+' — '+LEVEL_NAMES[lvl];
+  const cur=P.xp-LEVEL_XP[lvl-1],nxt=LEVEL_XP[Math.min(lvl,LEVEL_XP.length-1)]-LEVEL_XP[lvl-1];
+  const pct=Math.min(cur/nxt*100,100).toFixed(0);
+  document.getElementById('sh-xp-bar').style.width=pct+'%';
+  document.getElementById('sh-xp-label').textContent=cur+' / '+nxt+' XP para o próximo nível';
+  ['stars','coins','streak','quizzes','correct','activities','time','medals'].forEach(k=>{
+    const el=document.getElementById('s-'+k);if(el)el.textContent=k==='medals'?P.earnedMedals.length:P[k==='activities'?'activitiesCount':k==='correct'?'correctAnswers':k==='time'?'minutesStudied':k]||0;
+  });
+  const mg=document.getElementById('medals-grid');mg.innerHTML='';
+  ALL_MEDALS.forEach(m=>{
+    const e=P.earnedMedals.includes(m.id);
+    const c=document.createElement('div');c.className='medal-card '+(e?'earned':'locked');
+    c.innerHTML='<span class="medal-icon">'+m.icon+'</span><div class="medal-name">'+m.name+'</div><div class="medal-pts">'+(e?'+'+m.pts+' pts':'🔒')+'</div>';
+    if(e)c.onclick=()=>toast('🏅 '+m.name+': '+m.desc);mg.appendChild(c);
+  });
+  const cg=document.getElementById('certs-grid');cg.innerHTML='';
+  ALL_CERTS.forEach(c=>{
+    const e=P.earnedCerts.includes(c.id);
+    const d=document.createElement('div');d.className='cert-card'+(e?'':' locked');
+    d.innerHTML='<span class="cert-icon">'+c.icon+'</span><div class="cert-name">'+c.name+'</div><div class="cert-sub">'+(e?c.req:'🔒 '+c.req)+'</div>'+(e?'<button class="cert-print" onclick="event.stopPropagation();showCert(\''+c.id+'\')">📜 Ver Certificado</button>':'');
+    cg.appendChild(d);
+  });
+}
+function renderParentsPanel(){
+  if(!P)return;
+  document.getElementById('pp-name').textContent=P.name;
+  document.getElementById('pp-time').textContent=P.minutesStudied;
+  document.getElementById('pp-activities').textContent=P.activitiesCount;
+  const tot=P.correctAnswers+P.wrongAnswers;
+  document.getElementById('pp-correct').textContent=tot>0?Math.round(P.correctAnswers/tot*100)+'%':'—';
+  document.getElementById('pp-streak').textContent=P.streak;
+  document.getElementById('pp-medals').textContent=P.earnedMedals.length;
+  document.getElementById('pp-level').textContent=P.level;
+  const mods=[
+    {name:'🔤 Fonética',key:'fonetica',max:26,col:'#FF6B9D'},
+    {name:'🔢 Matemática',key:'matematica',max:20,col:'#4776E6'},
+    {name:'🇺🇸 Inglês',key:'ingles',max:40,col:'#11998e'},
+    {name:'🔬 Ciências',key:'ciencias',max:12,col:'#f7971e'},
+    {name:'🗺️ Geografia',key:'geo',max:12,col:'#c0392b'},
+    {name:'📖 Bíblia',key:'biblia',max:12,col:'#6a3093'},
+    {name:'🎯 Quiz',key:'quiz',max:50,col:'#FC5C7D'},
+  ];
+  const mb=document.getElementById('modules-bars');mb.innerHTML='';
+  mods.forEach(m=>{
+    const v=Math.min(P.modules[m.key]||0,m.max),pct=Math.round(v/m.max*100);
+    mb.innerHTML+='<div class="mod-row"><div class="mod-row-top"><span class="mod-name">'+m.name+'</span><span class="mod-pct" style="color:'+m.col+'">'+pct+'%</span></div><div class="mod-bar-wrap"><div class="mod-bar" style="width:'+pct+'%;background:'+m.col+'"></div></div></div>';
+  });
+  const ll=document.getElementById('activity-log-list');ll.innerHTML='';
+  if(!P.activityLog.length){ll.innerHTML='<p style="color:#aaa;font-size:.85rem;text-align:center">Nenhuma atividade ainda</p>';return;}
+  P.activityLog.slice(0,10).forEach(a=>{ll.innerHTML+='<div class="log-item"><span class="log-icon">📌</span><span class="log-txt">'+a.txt+'</span><span class="log-time">'+a.time+'</span></div>';});
+}
+function showCert(id){
+  const c=ALL_CERTS.find(x=>x.id===id);if(!c)return;
+  document.getElementById('cert-name-disp').textContent=P.name;
+  document.getElementById('cert-award-disp').textContent=c.icon+' '+c.name;
+  document.getElementById('cert-date-disp').textContent='Data: '+new Date().toLocaleDateString('pt-BR');
+  document.getElementById('cert-modal').classList.add('open');
+}
+
+// ═══════════════════ NAVIGATION ═══════════════════
+function showSection(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  stopSpeech();
+  if(id==='aluno')renderStudentArea();
+  if(id==='pais')renderParentsPanel();
+  P.modules[id]=(P.modules[id]||0)+1;saveProfile();
+}
+
+// ═══════════════════ SPEECH ═══════════════════
+function speak(txt,lang='pt-BR',rate=0.85,pitch=1.1){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang=lang;u.rate=rate;u.pitch=pitch;window.speechSynthesis.speak(u);}
+function speakEN(txt){speak(txt,'en-US',0.8,1.1);}
+function stopSpeech(){if(window.speechSynthesis)window.speechSynthesis.cancel();}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+
+// ═══════════════════ ALPHABET ═══════════════════
+const ALPHA=[
+  {l:'A',e:'🐝',w:'Abelha',ph:'a-be-lha',s:'A de Abelha. A, A, A!'},
+  {l:'B',e:'⚽',w:'Bola',ph:'bo-la',s:'B de Bola. B, B, B!'},
+  {l:'C',e:'🏠',w:'Casa',ph:'ca-sa',s:'C de Casa. C, C, C!'},
+  {l:'D',e:'🦷',w:'Dente',ph:'den-te',s:'D de Dente. D, D, D!'},
+  {l:'E',e:'⭐',w:'Estrela',ph:'es-tre-la',s:'E de Estrela. E, E, E!'},
+  {l:'F',e:'🌸',w:'Flor',ph:'flor',s:'F de Flor. F, F, F!'},
+  {l:'G',e:'🐱',w:'Gato',ph:'ga-to',s:'G de Gato. G, G, G!'},
+  {l:'H',e:'🏨',w:'Hotel',ph:'ho-tel',s:'H de Hotel. H, H, H!'},
+  {l:'I',e:'🏝️',w:'Ilha',ph:'i-lha',s:'I de Ilha. I, I, I!'},
+  {l:'J',e:'📰',w:'Jornal',ph:'jor-nal',s:'J de Jornal. J, J, J!'},
+  {l:'K',e:'🥝',w:'Kiwi',ph:'ki-wi',s:'K de Kiwi. K, K, K!'},
+  {l:'L',e:'🦁',w:'Leão',ph:'le-ão',s:'L de Leão. L, L, L!'},
+  {l:'M',e:'🐵',w:'Macaco',ph:'ma-ca-co',s:'M de Macaco. M, M, M!'},
+  {l:'N',e:'☁️',w:'Nuvem',ph:'nu-vem',s:'N de Nuvem. N, N, N!'},
+  {l:'O',e:'🐑',w:'Ovelha',ph:'o-ve-lha',s:'O de Ovelha. O, O, O!'},
+  {l:'P',e:'🐟',w:'Peixe',ph:'pei-xe',s:'P de Peixe. P, P, P!'},
+  {l:'Q',e:'🧀',w:'Queijo',ph:'quei-jo',s:'Q de Queijo. Q, Q, Q!'},
+  {l:'R',e:'🐸',w:'Rã',ph:'rã',s:'R de Rã. R, R, R!'},
+  {l:'S',e:'☀️',w:'Sol',ph:'sol',s:'S de Sol. S, S, S!'},
+  {l:'T',e:'🐢',w:'Tartaruga',ph:'tar-ta-ru-ga',s:'T de Tartaruga. T, T, T!'},
+  {l:'U',e:'🍇',w:'Uva',ph:'u-va',s:'U de Uva. U, U, U!'},
+  {l:'V',e:'🐄',w:'Vaca',ph:'va-ca',s:'V de Vaca. V, V, V!'},
+  {l:'W',e:'🧇',w:'Waffle',ph:'wa-fle',s:'W de Waffle. W, W, W!'},
+  {l:'X',e:'☕',w:'Xícara',ph:'xi-ca-ra',s:'X de Xícara. X, X, X!'},
+  {l:'Y',e:'🍜',w:'Yakisoba',ph:'ya-ki-so-ba',s:'Y de Yakisoba. Y, Y, Y!'},
+  {l:'Z',e:'🦓',w:'Zebra',ph:'ze-bra',s:'Z de Zebra. Z, Z, Z!'},
+];
+const VOWELS=new Set(['A','E','I','O','U']);
+const BGCOLS=['#FF6B9D','#FF8E53','#FFD700','#4CAF50','#26C6DA','#9B59B6','#3498DB','#E74C3C','#2ECC71','#FF6B9D'];
+function buildAlphabet(){
+  const g=document.getElementById('alphabet-grid');
+  ALPHA.forEach((it,i)=>{
+    const col=BGCOLS[i%BGCOLS.length];
+    const c=document.createElement('div');c.className='letter-card';c.style.borderColor=col;
+    c.innerHTML='<span class="big-letter" style="color:'+col+'">'+it.l+'</span><span class="lc-emoji">'+it.e+'</span><span class="lc-word" style="color:'+col+'">'+it.w+'</span><span class="lc-phon">['+it.ph+']</span><button class="sound-btn" onclick="event.stopPropagation();speak(\''+it.s+'\')">🔊 Ouvir</button>';
+    c.onclick=()=>{speak(it.s);toast('🔊 '+it.l+' de '+it.w);if(VOWELS.has(it.l))MC.vowels.add(it.l);P.modules.fonetica=(P.modules.fonetica||0)+1;addReward(1,1,5,'Letra '+it.l);checkMedals();};
+    g.appendChild(c);
+  });
+}
+const SILS=[
+  {s:'BA-BE-BI-BO-BU',e:'👶',w:'Bebê/Bola/Bico'},{s:'CA-CE-CI-CO-CU',e:'🏠',w:'Casa/Cebola/Cinto'},
+  {s:'DA-DE-DI-DO-DU',e:'🎲',w:'Dado/Dedo/Dindim'},{s:'FA-FE-FI-FO-FU',e:'🧚',w:'Fada/Foca/Fita'},
+  {s:'GA-GE-GI-GO-GU',e:'🐱',w:'Gato/Gelo/Girafa'},{s:'LA-LE-LI-LO-LU',e:'🦁',w:'Lata/Leão/Lua'},
+  {s:'MA-ME-MI-MO-MU',e:'🐵',w:'Mala/Mel/Macaco'},{s:'NA-NE-NI-NO-NU',e:'☁️',w:'Nado/Neve/Ninho'},
+  {s:'PA-PE-PI-PO-PU',e:'🦆',w:'Pato/Pena/Pipa'},{s:'RA-RE-RI-RO-RU',e:'🐭',w:'Rato/Rede/Rio'},
+  {s:'SA-SE-SI-SO-SU',e:'☀️',w:'Sapo/Selo/Sino'},{s:'TA-TE-TI-TO-TU',e:'🐢',w:'Tatu/Teto/Time'},
+  {s:'VA-VE-VI-VO-VU',e:'🐄',w:'Vaca/Vela/Vida'},
+];
+function buildSilabas(){
+  const g=document.getElementById('silabas-grid');
+  SILS.forEach((it,i)=>{
+    const col=BGCOLS[(i+3)%BGCOLS.length];const txt=it.s.replace(/-/g,', ');
+    const c=document.createElement('div');c.className='letter-card';c.style.borderColor=col;
+    c.innerHTML='<span class="lc-emoji" style="font-size:2rem">'+it.e+'</span><span class="big-letter" style="color:'+col+';font-size:1rem;white-space:nowrap">'+it.s+'</span><span class="lc-word" style="color:#777;font-size:.74rem">'+it.w+'</span><button class="sound-btn" onclick="event.stopPropagation();speak(\''+txt+'\')">🔊 Ouvir</button>';
+    c.onclick=()=>{speak(txt);MC.sil++;addReward(1,1,5,'Sílaba '+it.s.split('-')[0]);checkMedals();};g.appendChild(c);
+  });
+}
+
+// ═══════════════════ MATH ═══════════════════
+const NUMS=[{n:0,w:'Zero'},{n:1,w:'Um'},{n:2,w:'Dois'},{n:3,w:'Três'},{n:4,w:'Quatro'},{n:5,w:'Cinco'},{n:6,w:'Seis'},{n:7,w:'Sete'},{n:8,w:'Oito'},{n:9,w:'Nove'},{n:10,w:'Dez'},{n:11,w:'Onze'},{n:12,w:'Doze'},{n:13,w:'Treze'},{n:14,w:'Quatorze'},{n:15,w:'Quinze'},{n:16,w:'Dezesseis'},{n:17,w:'Dezessete'},{n:18,w:'Dezoito'},{n:19,w:'Dezenove'},{n:20,w:'Vinte'}];
+function buildNumbers(){const r=document.getElementById('nums-row');NUMS.forEach(it=>{const c=document.createElement('div');c.className='num-card';c.innerHTML='<span class="nn">'+it.n+'</span><span class="nw">'+it.w+'</span>';c.onclick=()=>{speak(it.n+'. '+it.w);toast('🔢 '+it.n+' — '+it.w);addReward(1,1,5,'Número '+it.n);};r.appendChild(c);});}
+const SHAPES=[{n:'Círculo',col:'#E74C3C',svg:'<circle cx="40" cy="40" r="35" fill="#E74C3C" opacity=".85"/>'},{n:'Quadrado',col:'#3498DB',svg:'<rect x="5" y="5" width="70" height="70" rx="4" fill="#3498DB" opacity=".85"/>'},{n:'Triângulo',col:'#2ECC71',svg:'<polygon points="40,5 75,75 5,75" fill="#2ECC71" opacity=".85"/>'},{n:'Retângulo',col:'#9B59B6',svg:'<rect x="3" y="20" width="74" height="40" rx="4" fill="#9B59B6" opacity=".85"/>'},{n:'Losango',col:'#FF6B9D',svg:'<polygon points="40,5 75,40 40,75 5,40" fill="#FF6B9D" opacity=".85"/>'},{n:'Estrela',col:'#FFD700',svg:'<polygon points="40,5 47,30 72,30 52,48 60,73 40,57 20,73 28,48 8,30 33,30" fill="#FFD700" opacity=".85"/>'},{n:'Hexágono',col:'#FF8E53',svg:'<polygon points="40,5 71,22 71,58 40,75 9,58 9,22" fill="#FF8E53" opacity=".85"/>'},{n:'Oval',col:'#26C6DA',svg:'<ellipse cx="40" cy="40" rx="38" ry="26" fill="#26C6DA" opacity=".85"/>'}];
+function buildShapes(){const r=document.getElementById('shapes-row');SHAPES.forEach(s=>{const d=document.createElement('div');d.className='shape-item';d.innerHTML='<svg class="shape-svg" viewBox="0 0 80 80">'+s.svg+'</svg><div class="shape-name" style="color:'+s.col+'">'+s.n+'</div>';d.onclick=()=>{speak('Esta figura chama-se '+s.n+'!');toast('🔵 '+s.n);addReward(1,1,5,'Forma: '+s.n);};r.appendChild(d);});}
+const OPS=[{sym:'➕',n:'Adição',ex:'3+2=5',sp:'Três mais dois igual a cinco'},{sym:'➖',n:'Subtração',ex:'5-2=3',sp:'Cinco menos dois igual a três'},{sym:'✖️',n:'Multiplicação',ex:'2×3=6',sp:'Dois vezes três igual a seis'},{sym:'➗',n:'Divisão',ex:'6÷2=3',sp:'Seis dividido por dois igual a três'},{sym:'=',n:'Igualdade',ex:'2+2=4',sp:'Dois mais dois é igual a quatro'},{sym:'>',n:'Maior que',ex:'5>3',sp:'Cinco é maior que três'},{sym:'<',n:'Menor que',ex:'2<7',sp:'Dois é menor que sete'},{sym:'½',n:'Metade',ex:'10÷2=5',sp:'A metade de dez é cinco'}];
+function buildOps(){const g=document.getElementById('op-grid');OPS.forEach(o=>{const c=document.createElement('div');c.className='op-card';c.innerHTML='<div class="op-sym">'+o.sym+'</div><div class="op-nm">'+o.n+'</div><div class="op-ex">'+o.ex+'</div>';c.onclick=()=>{speak(o.sp);toast('📝 '+o.sp);addReward(1,1,5,'Operação: '+o.n);};g.appendChild(c);});}
+const MEDIDAS=[{l:'📏',w:'Grande'},{l:'📐',w:'Pequeno'},{l:'⚖️',w:'Pesado'},{l:'🪶',w:'Leve'},{l:'🌡️',w:'Quente'},{l:'🧊',w:'Frio'},{l:'⬆️',w:'Alto'},{l:'⬇️',w:'Baixo'},{l:'↔️',w:'Largo'},{l:'📦',w:'Cheio'},{l:'🫙',w:'Vazio'},{l:'🔄',w:'Igual'}];
+function buildMedidas(){const g=document.getElementById('medidas-grid');MEDIDAS.forEach((m,i)=>{const col=BGCOLS[i%BGCOLS.length];const c=document.createElement('div');c.className='letter-card';c.style.borderColor=col;c.innerHTML='<span style="font-size:2.2rem">'+m.l+'</span><span class="lc-word" style="color:'+col+';font-size:.95rem;margin-top:8px">'+m.w+'</span>';c.onclick=()=>{speak(m.w);toast('📏 '+m.w);addReward(1,1,4,'Medida: '+m.w);};g.appendChild(c);});}
+
+// ═══════════════════ ENGLISH ═══════════════════
+const ENG={
+  colors:[{e:'Red',p:'Vermelho',em:'🔴',ph:'réd'},{e:'Blue',p:'Azul',em:'🔵',ph:'bluu'},{e:'Green',p:'Verde',em:'🟢',ph:'griin'},{e:'Yellow',p:'Amarelo',em:'🟡',ph:'iélo'},{e:'Orange',p:'Laranja',em:'🟠',ph:'ôrenj'},{e:'Purple',p:'Roxo',em:'🟣',ph:'pôrpol'},{e:'Pink',p:'Rosa',em:'🌸',ph:'pink'},{e:'White',p:'Branco',em:'⬜',ph:'uait'},{e:'Black',p:'Preto',em:'⬛',ph:'blak'},{e:'Brown',p:'Marrom',em:'🟫',ph:'braun'}],
+  animals:[{e:'Dog',p:'Cachorro',em:'🐶',ph:'dog'},{e:'Cat',p:'Gato',em:'🐱',ph:'kat'},{e:'Bird',p:'Pássaro',em:'🐦',ph:'bôrd'},{e:'Fish',p:'Peixe',em:'🐟',ph:'fish'},{e:'Horse',p:'Cavalo',em:'🐴',ph:'hórs'},{e:'Cow',p:'Vaca',em:'🐄',ph:'kau'},{e:'Lion',p:'Leão',em:'🦁',ph:'láion'},{e:'Elephant',p:'Elefante',em:'🐘',ph:'élifant'},{e:'Butterfly',p:'Borboleta',em:'🦋',ph:'bôterflay'},{e:'Rabbit',p:'Coelho',em:'🐰',ph:'rábit'},{e:'Duck',p:'Pato',em:'🦆',ph:'dak'},{e:'Frog',p:'Sapo',em:'🐸',ph:'frog'}],
+  numbers:[{e:'One',p:'Um',em:'1️⃣',ph:'uan'},{e:'Two',p:'Dois',em:'2️⃣',ph:'tuu'},{e:'Three',p:'Três',em:'3️⃣',ph:'thrii'},{e:'Four',p:'Quatro',em:'4️⃣',ph:'fôr'},{e:'Five',p:'Cinco',em:'5️⃣',ph:'faiv'},{e:'Six',p:'Seis',em:'6️⃣',ph:'siks'},{e:'Seven',p:'Sete',em:'7️⃣',ph:'séven'},{e:'Eight',p:'Oito',em:'8️⃣',ph:'éit'},{e:'Nine',p:'Nove',em:'9️⃣',ph:'nain'},{e:'Ten',p:'Dez',em:'🔟',ph:'ten'}],
+  body:[{e:'Head',p:'Cabeça',em:'🗣️',ph:'héd'},{e:'Eye',p:'Olho',em:'👁️',ph:'ai'},{e:'Nose',p:'Nariz',em:'👃',ph:'nouz'},{e:'Mouth',p:'Boca',em:'👄',ph:'mauth'},{e:'Ear',p:'Orelha',em:'👂',ph:'ír'},{e:'Hand',p:'Mão',em:'✋',ph:'hand'},{e:'Foot',p:'Pé',em:'🦶',ph:'fut'},{e:'Arm',p:'Braço',em:'💪',ph:'arm'},{e:'Leg',p:'Perna',em:'🦵',ph:'leg'},{e:'Heart',p:'Coração',em:'❤️',ph:'hart'}],
+  food:[{e:'Apple',p:'Maçã',em:'🍎',ph:'ápol'},{e:'Banana',p:'Banana',em:'🍌',ph:'banána'},{e:'Bread',p:'Pão',em:'🍞',ph:'bred'},{e:'Milk',p:'Leite',em:'🥛',ph:'milk'},{e:'Egg',p:'Ovo',em:'🥚',ph:'eg'},{e:'Rice',p:'Arroz',em:'🍚',ph:'rais'},{e:'Pizza',p:'Pizza',em:'🍕',ph:'piítza'},{e:'Cake',p:'Bolo',em:'🎂',ph:'keik'},{e:'Water',p:'Água',em:'💧',ph:'uóter'},{e:'Orange',p:'Laranja',em:'🍊',ph:'ôrenj'},{e:'Strawberry',p:'Morango',em:'🍓',ph:'stróberi'},{e:'Chocolate',p:'Chocolate',em:'🍫',ph:'tchoklat'}],
+  greetings:[{e:'Hello!',p:'Olá!',em:'👋',ph:'hélo'},{e:'Good morning',p:'Bom dia',em:'🌅',ph:'gúd mórning'},{e:'Good night',p:'Boa noite',em:'🌙',ph:'gúd nait'},{e:'Thank you',p:'Obrigado',em:'🙏',ph:'thenk iuu'},{e:"You're welcome",p:'De nada',em:'😊',ph:'iór uélkom'},{e:'Please',p:'Por favor',em:'🌸',ph:'pliiz'},{e:'Sorry',p:'Desculpe',em:'😔',ph:'sóri'},{e:'Yes',p:'Sim',em:'✅',ph:'iés'},{e:'No',p:'Não',em:'❌',ph:'nou'},{e:'Goodbye',p:'Tchau',em:'👋',ph:'gúdbai'},{e:'My name is',p:'Meu nome é',em:'🏷️',ph:'mai néim iz'},{e:'How are you?',p:'Como vai?',em:'❓',ph:'hau ar iuu'}],
+  alphabet:[{e:'A',p:'Ei',em:'🍎',ph:'ei'},{e:'B',p:'Bi',em:'🐝',ph:'bii'},{e:'C',p:'Si',em:'🐱',ph:'sii'},{e:'D',p:'Di',em:'🐶',ph:'dii'},{e:'E',p:'I',em:'🥚',ph:'ii'},{e:'F',p:'Ef',em:'🐠',ph:'ef'},{e:'G',p:'Ji',em:'🍇',ph:'jii'},{e:'H',p:'Éich',em:'🏠',ph:'éich'},{e:'I',p:'Ai',em:'🍦',ph:'ai'},{e:'J',p:'Jéi',em:'🃏',ph:'jéi'},{e:'K',p:'Kéi',em:'🥝',ph:'kéi'},{e:'L',p:'El',em:'🦁',ph:'el'},{e:'M',p:'Em',em:'🐭',ph:'em'},{e:'N',p:'En',em:'🌙',ph:'en'},{e:'O',p:'Ou',em:'🐙',ph:'ou'},{e:'P',p:'Pi',em:'🐧',ph:'pii'},{e:'Q',p:'Quiu',em:'👸',ph:'quiu'},{e:'R',p:'Ar',em:'🌈',ph:'ar'},{e:'S',p:'Es',em:'☀️',ph:'es'},{e:'T',p:'Ti',em:'🐢',ph:'tii'},{e:'U',p:'Iú',em:'🦄',ph:'iú'},{e:'V',p:'Vi',em:'🎻',ph:'vii'},{e:'W',p:'Dôbol-iú',em:'🐋',ph:'dôbol iú'},{e:'X',p:'Éks',em:'🎸',ph:'éks'},{e:'Y',p:'Uai',em:'🪀',ph:'uai'},{e:'Z',p:'Zi',em:'🦓',ph:'zii'}]
+};
+function buildEnglish(){
+  Object.keys(ENG).forEach(key=>{
+    const g=document.getElementById('g-'+key);if(!g)return;
+    ENG[key].forEach(it=>{
+      const c=document.createElement('div');c.className='vocab-card';
+      c.innerHTML='<div class="v-emoji">'+it.em+'</div><div class="v-en">'+it.e+'</div><div class="v-pt">'+it.p+'</div><div class="v-ph">['+it.ph+']</div>';
+      c.onclick=()=>{speakEN(it.e);toast('🔊 '+it.e+' = '+it.p);MC.eng++;P.modules.ingles=(P.modules.ingles||0)+1;addReward(1,1,6,'Inglês: '+it.e);checkMedals();};g.appendChild(c);
+    });
+  });
+}
+function showEngTab(id,btn){document.querySelectorAll('.eng-content').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.eng-tab').forEach(b=>b.classList.remove('active'));document.getElementById('eng-'+id).classList.add('active');btn.classList.add('active');}
+
+// ═══════════════════ SCIENCES ═══════════════════
+const SCI=[
+  {e:'☀️',h:'Sistema Solar',d:'O Sol fica no centro e os planetas giram ao redor! Temos 8 planetas.',s:'O sistema solar tem oito planetas que giram em torno do Sol!'},
+  {e:'🌍',h:'A Terra',d:'Nosso planeta tem água, terra e ar. É o único planeta com vida!',s:'A Terra é nosso lar! Ela tem terra, água e ar.'},
+  {e:'🌱',h:'Fotossíntese',d:'Plantas usam luz do sol, água e ar para criar alimento e produzem oxigênio!',s:'As plantas fazem fotossíntese e produzem oxigênio!'},
+  {e:'💧',h:'Ciclo da Água',d:'Água evapora, forma nuvens e volta como chuva. O ciclo nunca para!',s:'O ciclo da água: evaporação, condensação e precipitação!'},
+  {e:'🦋',h:'Metamorfose',d:'Borboleta: ovo, lagarta, casulo e borboleta! Isso é metamorfose.',s:'A borboleta passa por quatro fases: ovo, lagarta, casulo e borboleta!'},
+  {e:'🧲',h:'Magnetismo',d:'O ímã tem norte e sul. Polos iguais se repelem, diferentes se atraem!',s:'O ímã atrai metais! Polos opostos se atraem.'},
+  {e:'🌈',h:'Arco-Íris',d:'Luz + chuva = 7 cores: vermelho, laranja, amarelo, verde, azul, anil, violeta!',s:'O arco-íris tem 7 cores!'},
+  {e:'🦷',h:'Corpo Humano',d:'206 ossos, 600+ músculos, 37 trilhões de células!',s:'Nosso corpo tem 206 ossos e mais de 600 músculos!'},
+  {e:'🌡️',h:'Estados da Água',d:'Sólido (gelo), líquido (água), gasoso (vapor). A temperatura muda seu estado!',s:'A água tem três estados: sólido, líquido e gasoso!'},
+  {e:'🐠',h:'Oceanos',d:'Os oceanos cobrem 71% da Terra com milhares de criaturas!',s:'Os oceanos cobrem 71 por cento da Terra!'},
+  {e:'🌙',h:'Fases da Lua',d:'Nova, Crescente, Cheia e Minguante. 29 dias para completar um ciclo!',s:'A Lua tem quatro fases e leva 29 dias para completar seu ciclo!'},
+  {e:'🧬',h:'Seres Vivos',d:'Todos os seres vivos nascem, crescem, reproduzem e morrem.',s:'Os seres vivos nascem, crescem, se reproduzem e morrem!'},
+];
+function buildSci(){const g=document.getElementById('sci-grid');SCI.forEach(s=>{const c=document.createElement('div');c.className='sci-card';c.innerHTML='<div class="sci-emoji">'+s.e+'</div><h4>'+s.h+'</h4><p>'+s.d+'</p>';c.onclick=()=>{speak(s.s);toast('🔬 '+s.h);MC.sci++;P.modules.ciencias=(P.modules.ciencias||0)+1;addReward(1,2,8,'Ciências: '+s.h);checkMedals();};g.appendChild(c);});}
+
+// ═══════════════════ GEOGRAPHY ═══════════════════
+const GEO=[
+  {e:'🇧🇷',h:'Brasil',d:'Maior país da América do Sul! Capital: Brasília. Tem a Amazônia!',s:'O Brasil é o maior país da América do Sul! Nossa capital é Brasília.'},
+  {e:'🌍',h:'7 Continentes',d:'América, Europa, África, Ásia, Oceania, Antártida e América do Norte.',s:'A Terra tem 7 continentes!'},
+  {e:'🌊',h:'5 Oceanos',d:'Pacífico (maior), Atlântico, Índico, Ártico e Antártico.',s:'Existem 5 oceanos no mundo!'},
+  {e:'🏔️',h:'Montanhas',d:'O Everest é a montanha mais alta do mundo!',s:'O Everest é a montanha mais alta do mundo, com mais de 8 mil metros!'},
+  {e:'🏙️',h:'Estados do Brasil',d:'Brasil tem 26 estados e 1 Distrito Federal. São Paulo é a maior cidade!',s:'O Brasil tem 26 estados e 1 Distrito Federal!'},
+  {e:'🌿',h:'Biomas do Brasil',d:'Amazônia, Cerrado, Caatinga, Mata Atlântica, Pampa e Pantanal.',s:'O Brasil tem 6 biomas!'},
+  {e:'⛅',h:'Clima',d:'Tropical, frio, desértico, temperado. Brasil tem clima tropical!',s:'O Brasil tem principalmente clima tropical!'},
+  {e:'🌎',h:'América do Sul',d:'12 países! Brasil, Argentina, Peru, Colômbia e outros.',s:'A América do Sul tem 12 países!'},
+  {e:'🗺️',h:'Rosa dos Ventos',d:'4 direções: Norte, Sul, Leste e Oeste. Usada em mapas!',s:'A rosa dos ventos tem 4 direções: Norte, Sul, Leste e Oeste!'},
+  {e:'🏛️',h:'Capitais do Mundo',d:'França→Paris, Itália→Roma, EUA→Washington, Japão→Tóquio.',s:'França tem Paris, Itália tem Roma, Estados Unidos tem Washington!'},
+  {e:'🏝️',h:'Ilhas',d:'Terras rodeadas de água. Fernando de Noronha é um tesouro!',s:'Ilhas são terras rodeadas de água!'},
+  {e:'🌋',h:'Vulcões',d:'Aberturas onde saem lava, gases e cinzas. Incríveis!',s:'Vulcões são montanhas que soltam lava quando entram em erupção!'},
+];
+function buildGeo(){const g=document.getElementById('geo-grid');GEO.forEach(s=>{const c=document.createElement('div');c.className='sci-card';c.innerHTML='<div class="sci-emoji">'+s.e+'</div><h4>'+s.h+'</h4><p>'+s.d+'</p>';c.onclick=()=>{speak(s.s);toast('🗺️ '+s.h);MC.geo++;P.modules.geo=(P.modules.geo||0)+1;addReward(1,2,8,'Geografia: '+s.h);checkMedals();};g.appendChild(c);});}
+
+// ═══════════════════ BIBLE ═══════════════════
+const BIBLE=[
+  {em:'🌍',t:'A Criação do Mundo',col:'#27ae60',sum:'Deus criou o mundo em 6 dias!',txt:'No começo, Deus criou o céu e a terra.<br><br><strong>Dia 1:</strong> Luz! <strong>Dia 2:</strong> Céu. <strong>Dia 3:</strong> Terra e plantas! <strong>Dia 4:</strong> Sol, lua e estrelas. <strong>Dia 5:</strong> Peixes e pássaros! <strong>Dia 6:</strong> Animais e <span class="hl">Adão e Eva</span>! <strong>Dia 7:</strong> Deus descansou.',verse:'No princípio criou Deus os céus e a terra. — Gênesis 1:1',sp:'No começo, Deus criou o céu e a terra! No primeiro dia, Deus disse: haja luz! No sexto dia criou Adão e Eva. E tudo era muito bom!'},
+  {em:'🚢',t:'Noé e a Arca',col:'#2980b9',sum:'Noé construiu uma arca gigante para salvar os animais!',txt:'<strong>Noé</strong> amava a Deus. Deus disse: <em>"Construa uma arca!"</em><br><br>Noé colocou <span class="hl">dois de cada animal</span>. Choveu por <strong>40 dias e 40 noites</strong>! Uma <span class="hl">pomba</span> trouxe ramo de oliveira — paz! Deus colocou um <strong>arco-íris</strong> no céu!',verse:'Noé era um homem justo e íntegro. — Gênesis 6:9',sp:'Noé obedeceu a Deus e construiu uma arca! Choveu 40 dias. Uma pomba trouxe ramo de oliveira. Deus colocou um arco-íris como promessa!'},
+  {em:'⭐',t:'Nascimento de Jesus',col:'#8e44ad',sum:'Jesus nasceu em Belém numa manjedoura!',txt:'O anjo <span class="hl">Gabriel</span> disse a <strong>Maria</strong>: <em>"Você terá Jesus!"</em><br><br>Jesus nasceu em <span class="hl">Belém</span> numa <strong>manjedoura</strong>! Uma <span class="hl">estrela brilhante</span> guiou pastores e reis magos. Trouxeram <strong>ouro, incenso e mirra</strong>. Os anjos cantaram: <em>"Glória a Deus!"</em>',verse:'Porque um menino nos nasceu, um filho nos foi dado. — Isaías 9:6',sp:'O anjo Gabriel disse a Maria: você terá Jesus! Ele nasceu em Belém numa manjedoura. Pastores e reis magos o visitaram. Os anjos cantaram glória a Deus!'},
+  {em:'🏹',t:'Davi e Golias',col:'#e67e22',sum:'O pequeno Davi venceu o gigante Golias com fé em Deus!',txt:'<strong>Golias</strong> era um guerreiro gigantesco! Todos tinham medo.<br><br>Mas <span class="hl">Davi</span> disse: <em>"Deus estará comigo!"</em> Com <strong>funda e 5 pedras</strong>, acertou Golias na testa! O gigante caiu! <span class="hl">Com Deus, vencemos qualquer gigante!</span>',verse:'O SENHOR... também me livrará deste filisteu. — 1 Samuel 17:37',sp:'Golias era um gigante! Mas Davi confiava em Deus. Com uma funda e cinco pedras, acertou Golias! O gigante caiu. Com fé, vencemos nossos medos!'},
+  {em:'🐋',t:'Jonas e o Peixe Grande',col:'#16a085',sum:'Jonas fugiu de Deus mas foi engolido por um peixe!',txt:'Deus pediu que <strong>Jonas</strong> fosse a <span class="hl">Nínive</span>. Jonas fugiu! Deus mandou <strong>tempestade</strong>. Jonas foi engolido por um <span class="hl">peixe grandíssimo</span>! Depois de <strong>3 dias</strong>, o peixe cuspiu Jonas. Ele foi pregar e o povo se arrependeu!',verse:'Invoquei, na minha angústia, ao SENHOR. — Jonas 2:2',sp:'Jonas fugiu de Deus. Foi engolido por um peixe! Em 3 dias foi cuspido. Foi a Nínive e o povo se arrependeu!'},
+  {em:'🦁',t:'Daniel na Cova dos Leões',col:'#e74c3c',sum:'Daniel confiou em Deus e os leões não o machucaram!',txt:'<strong>Daniel</strong> orava a Deus 3 vezes por dia! Foi jogado na <strong>cova dos leões</strong>!<br><br>De manhã, o rei chamou: <em>"Daniel! Seu Deus te salvou?"</em> Daniel respondeu: <span class="hl">"Sim! Deus fechou a boca dos leões!"</span> Daniel saiu ileso!',verse:'O meu Deus enviou o seu anjo, e fechou a boca dos leões. — Daniel 6:22',sp:'Daniel orava 3 vezes por dia. Foi jogado na cova dos leões! Deus enviou um anjo que fechou a boca dos leões. Daniel saiu ileso!'},
+  {em:'🔥',t:'Moisés e o Mar Vermelho',col:'#c0392b',sum:'Moisés abriu o mar com a ajuda de Deus!',txt:'<strong>Moisés</strong> libertou o povo do <span class="hl">Egito</span>! O exército perseguiu o povo até o <strong>Mar Vermelho</strong>!<br><br>Moisés levantou seu cajado e <span class="hl">Deus abriu o mar</span>! O povo atravessou em terra seca. <em>Deus faz o impossível!</em>',verse:'O SENHOR peleijará por vós. — Êxodo 14:14',sp:'Moisés libertou o povo do Egito. Moisés levantou o cajado e Deus abriu o Mar Vermelho! O povo atravessou!'},
+  {em:'🌾',t:'José e a Túnica Colorida',col:'#d35400',sum:'Deus transformou a maldade dos irmãos em bem!',txt:'<strong>José</strong> ganhou uma <span class="hl">túnica colorida</span>. Irmãos com ciúmes o venderam como <strong>escravo</strong>!<br><br>Deus deu a José o dom de <span class="hl">interpretar sonhos</span>. José virou <strong>governador do Egito</strong> e <span class="hl">perdoou seus irmãos!</span>',verse:'Vós bem pensastes o mal; porém Deus o tornou em bem. — Gênesis 50:20',sp:'José tinha uma túnica colorida. Seus irmãos o venderam como escravo. Deus lhe deu o dom de interpretar sonhos. José virou governador e perdoou seus irmãos!'},
+  {em:'🎶',t:'Davi e os Salmos',col:'#2c3e50',sum:'Davi escreveu lindas músicas de louvor a Deus!',txt:'<strong>Davi</strong> tocava <span class="hl">harpa</span> e escreveu mais de <strong>73 salmos</strong>!<br><br><em>"O Senhor é o meu pastor e nada me faltará..."</em><br><br>Davi chamava Deus de <span class="hl">escudo, fortaleza e rocha</span>. Os salmos ensinam a louvar e confiar em Deus!',verse:'O Senhor é o meu pastor, nada me faltará. — Salmo 23:1',sp:'Davi tocava harpa e escreveu 73 salmos! O mais famoso: O Senhor é o meu pastor e nada me faltará!'},
+  {em:'🐟',t:'Jesus Alimenta 5000',col:'#1abc9c',sum:'Jesus alimentou 5000 pessoas com 5 pães e 2 peixes!',txt:'Mais de <strong>5000 pessoas</strong> estavam com fome! Um <span class="hl">menino</span> ofereceu <strong>5 pães e 2 peixes</strong>.<br><br>Jesus <strong>abençoou</strong> o alimento. <span class="hl">Todos comeram até ficarem satisfeitos!</span> Sobraram <strong>12 cestos</strong>!',verse:'E todos comeram e ficaram fartos. — Mateus 14:20',sp:'Cinco mil pessoas estavam com fome! Um menino deu 5 pães e 2 peixes. Jesus abençoou e todos comeram! Sobraram 12 cestos!'},
+  {em:'🌊',t:'Jesus Acalma a Tempestade',col:'#2980b9',sum:'Jesus mandou o vento e o mar pararem!',txt:'Jesus e os discípulos num barco quando veio <strong>tempestade enorme</strong>! Os discípulos com medo acordaram Jesus.<br><br>Ele disse: <em>"Aquietai-vos!"</em> O vento parou e o mar ficou <span class="hl">completamente calmo</span>! Jesus é <strong>Senhor de tudo!</strong>',verse:'Levantando-se, repreendeu os ventos e o mar. — Mateus 8:26',sp:'Uma tempestade abalou o barco! Jesus disse: aquietai-vos! E tudo ficou calmo. Jesus é Senhor até da natureza!'},
+  {em:'✝️',t:'Morte e Ressurreição',col:'#8e44ad',sum:'Jesus morreu por nós e ressuscitou ao terceiro dia!',txt:'Jesus nos amou e deu <span class="hl">sua vida na cruz</span> por nós!<br><br>No <strong>terceiro dia</strong>, o túmulo estava <span class="hl">vazio!</span> O anjo disse: <em>"Ele ressuscitou!"</em><br><br>Jesus apareceu vivo! <strong>Jesus está vivo!</strong>',verse:'Eu sou a ressurreição e a vida. — João 11:25',sp:'Jesus deu sua vida na cruz por nós! No terceiro dia ressuscitou! O anjo disse: ele ressuscitou! Jesus está vivo e nos ama!'},
+];
+function buildBible(){const g=document.getElementById('bible-grid');BIBLE.forEach((s,i)=>{const c=document.createElement('div');c.className='bible-card';c.innerHTML='<div class="bible-head" style="background:linear-gradient(135deg,'+s.col+','+s.col+'99)">'+s.em+'</div><div class="bible-body"><h3>'+s.t+'</h3><p>'+s.sum+'</p><button class="play-story-btn" onclick="openStory('+i+')">▶ Ouvir a História</button></div>';g.appendChild(c);});}
+let curStory=null;
+function openStory(i){curStory=BIBLE[i];document.getElementById('m-emoji').textContent=curStory.em;document.getElementById('m-title').textContent=curStory.t;document.getElementById('m-text').innerHTML=curStory.txt;document.getElementById('m-verse').textContent='📖 '+curStory.verse;document.getElementById('story-modal').classList.add('open');MC.stories++;P.modules.biblia=(P.modules.biblia||0)+1;addReward(2,3,12,'Bíblia: '+curStory.t);checkMedals();checkCerts();}
+function closeModal(){document.getElementById('story-modal').classList.remove('open');stopSpeech();}
+function speakStory(){if(curStory)speak(curStory.sp,'pt-BR',0.78,1.05);}
+
+// ═══════════════════ QUIZ DATA ═══════════════════
+const QS=[
+  {cat:'port',badge:'🔤 Português',em:'🍎',q:'Qual palavra começa com a letra A?',o:['Bola','Abacaxi','Gato','Mar'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🎈',q:'Quantas sílabas tem "BOLA"?',o:['1','2','3','4'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🌊',q:'Quantas sílabas tem "BORBOLETA"?',o:['2','3','4','5'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🔤',q:'Quantas letras tem o alfabeto?',o:['24','25','26','27'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'📝',q:'Qual vogal completa: C_SA?',o:['E','A','O','U'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🐱',q:'Qual palavra rima com GATO?',o:['Pato','Bolo','Cama','Dado'],a:0},
+  {cat:'port',badge:'🔤 Português',em:'☀️',q:'SOL tem quantas letras?',o:['2','3','4','5'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🌺',q:'Qual a primeira letra de FLOR?',o:['G','H','F','B'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'📖',q:'O que estuda a Fonética?',o:['Números','Sons das letras','Países','Animais'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🌙',q:'Qual palavra termina com A?',o:['Sol','Flor','Luna','Mar'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🍇',q:'Quantas vogais tem o alfabeto?',o:['3','4','5','6'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🔤',q:'Qual é uma consoante?',o:['A','E','B','I'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🐸',q:'Qual palavra começa com R?',o:['Zebra','Rato','Gato','Pato'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🦁',q:'"LEÃO" tem quantas sílabas?',o:['1','2','3','4'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'📝',q:'Quantas letras tem "ESCOLA"?',o:['5','6','7','8'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🌈',q:'Qual a última letra do alfabeto?',o:['X','Y','Z','W'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🐘',q:'ELEFANTE começa com qual letra?',o:['A','B','E','F'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'🐝',q:'Quantas sílabas tem "ABELHA"?',o:['2','3','4','5'],a:1},
+  {cat:'port',badge:'🔤 Português',em:'🎯',q:'Qual palavra tem 4 sílabas?',o:['Sol','Casa','Borboleta','Mar'],a:2},
+  {cat:'port',badge:'🔤 Português',em:'📚',q:'O que é uma sílaba?',o:['Uma letra','Parte de uma palavra','Uma frase','Um parágrafo'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Quanto é 2 + 3?',o:['4','5','6','7'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'➕',q:'Quanto é 5 + 5?',o:['8','9','10','11'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'➖',q:'Quanto é 8 - 3?',o:['4','5','6','7'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'🔵',q:'Qual figura tem 3 lados?',o:['Círculo','Quadrado','Triângulo','Retângulo'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Qual número vem depois do 9?',o:['8','10','11','12'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'✖️',q:'Quanto é 2 × 3?',o:['4','5','6','7'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'➗',q:'Quanto é 10 ÷ 2?',o:['3','4','5','6'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'📦',q:'Um quadrado tem quantos lados?',o:['3','4','5','6'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Qual é o número par?',o:['1','3','4','7'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Quanto é 7 + 8?',o:['13','14','15','16'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'➖',q:'Quanto é 20 - 7?',o:['11','12','13','14'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔵',q:'Um círculo tem quantos lados?',o:['0','1','2','3'],a:0},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Qual é maior: 15 ou 9?',o:['9','15','Igual','Nenhum'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'✖️',q:'Quanto é 5 × 2?',o:['7','8','9','10'],a:3},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Metade de 10 é:',o:['3','4','5','6'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'📐',q:'Um triângulo tem quantos ângulos?',o:['2','3','4','5'],a:1},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Quanto é 3 + 3 + 3?',o:['6','7','8','9'],a:3},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Qual é o número ímpar?',o:['2','4','5','8'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'➕',q:'Quanto é 12 + 8?',o:['18','19','20','21'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Quanto é 4 × 4?',o:['12','14','16','18'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Quanto é 15 - 6?',o:['7','8','9','10'],a:2},
+  {cat:'math',badge:'🔢 Matemática',em:'🔢',q:'Hexágono tem quantos lados?',o:['4','5','6','7'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🍎',q:'Como se diz "Maçã" em inglês?',o:['Banana','Apple','Orange','Grape'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🔴',q:'O que significa "Red"?',o:['Azul','Verde','Vermelho','Amarelo'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🐶',q:'Como se diz "Cachorro" em inglês?',o:['Cat','Bird','Dog','Fish'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'1️⃣',q:'Como se diz "Dois" em inglês?',o:['One','Two','Three','Four'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'👋',q:'Como se diz "Olá" em inglês?',o:['Goodbye','Hello','Thanks','Please'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🌅',q:'O que significa "Good morning"?',o:['Boa noite','Tchau','Bom dia','Por favor'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🐱',q:'Como se diz "Gato" em inglês?',o:['Dog','Cat','Bird','Horse'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🔵',q:'O que significa "Blue"?',o:['Verde','Amarelo','Azul','Rosa'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🍌',q:'Como se diz "Banana"?',o:['Apple','Orange','Banana','Grape'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'👁️',q:'Como se diz "Olho" em inglês?',o:['Nose','Eye','Ear','Mouth'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'5️⃣',q:'Como se diz "Cinco" em inglês?',o:['Four','Six','Five','Seven'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🌙',q:'O que significa "Good night"?',o:['Bom dia','Boa tarde','Boa noite','Olá'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🦁',q:'Como se diz "Leão" em inglês?',o:['Tiger','Bear','Lion','Wolf'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🟡',q:'O que significa "Yellow"?',o:['Azul','Verde','Rosa','Amarelo'],a:3},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🙏',q:'O que significa "Thank you"?',o:['Por favor','Desculpe','Obrigado','De nada'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🏠',q:'Como se diz "Casa" em inglês?',o:['Car','House','Tree','School'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'✋',q:'Como se diz "Mão" em inglês?',o:['Foot','Arm','Hand','Head'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🐘',q:'Como se diz "Elefante"?',o:['Giraffe','Elephant','Hippo','Rhino'],a:1},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'🍞',q:'Como se diz "Pão"?',o:['Milk','Egg','Bread','Rice'],a:2},
+  {cat:'eng',badge:'🇺🇸 Inglês',em:'❤️',q:'Como se diz "Coração" em inglês?',o:['Head','Foot','Arm','Heart'],a:3},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌍',q:'Qual é o nosso planeta?',o:['Marte','Júpiter','Terra','Saturno'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'☀️',q:'Qual fica no centro do Sistema Solar?',o:['Terra','Lua','Sol','Marte'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌱',q:'O que as plantas precisam para fotossíntese?',o:['Água e vento','Luz, água e ar','Só terra','Só chuva'],a:1},
+  {cat:'sci',badge:'🔬 Ciências',em:'🦋',q:'Quantas fases tem a metamorfose?',o:['2','3','4','5'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌈',q:'Quantas cores tem o arco-íris?',o:['5','6','7','8'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'💧',q:'Como chamamos quando a água vira gás?',o:['Congelamento','Evaporação','Chuva','Fusão'],a:1},
+  {cat:'sci',badge:'🔬 Ciências',em:'🦷',q:'Quantos ossos tem o corpo humano?',o:['106','206','306','406'],a:1},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌙',q:'Quantas fases tem a Lua?',o:['2','3','4','5'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🧲',q:'O que o ímã consegue atrair?',o:['Madeira','Plástico','Metal','Borracha'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌍',q:'Quantos planetas tem o Sistema Solar?',o:['7','8','9','10'],a:1},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌱',q:'O que as plantas produzem que respiramos?',o:['Gás carbônico','Nitrogênio','Oxigênio','Hidrogênio'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'💧',q:'Quantos estados físicos tem a água?',o:['1','2','3','4'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌊',q:'Quanto da Terra é coberto por oceanos?',o:['51%','61%','71%','81%'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'☀️',q:'De onde vem a energia das plantas?',o:['Chuva','Sol','Terra','Vento'],a:1},
+  {cat:'sci',badge:'🔬 Ciências',em:'🦋',q:'O casulo da borboleta se chama:',o:['Ovo','Larva','Pupa','Ninfa'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌙',q:'Quantos dias a Lua leva para um ciclo?',o:['14','22','29','35'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🦷',q:'Qual órgão bombeia o sangue?',o:['Pulmão','Fígado','Coração','Rim'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'🌡️',q:'Qual é o estado sólido da água?',o:['Vapor','Chuva','Gelo','Bruma'],a:2},
+  {cat:'sci',badge:'🔬 Ciências',em:'☀️',q:'Qual planeta é mais próximo do Sol?',o:['Vênus','Terra','Marte','Mercúrio'],a:3},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌍',q:'Em quantos dias Deus criou o mundo?',o:['5','6','7','8'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'🚢',q:'Quem construiu a Arca?',o:['Moisés','Davi','Noé','Jonas'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'⭐',q:'Onde Jesus nasceu?',o:['Nazaré','Jerusalém','Belém','Roma'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🏹',q:'Com o que Davi venceu Golias?',o:['Espada','Lança','Funda e pedra','Escudo'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🐋',q:'Quantos dias Jonas ficou no peixe?',o:['1','2','3','4'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🦁',q:'Quem foi à cova dos leões?',o:['José','Moisés','Daniel','Davi'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🔥',q:'Quem abriu o Mar Vermelho?',o:['Noé','Moisés','Josué','Davi'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌾',q:'Qual dom especial Deus deu a José?',o:['Cura','Profecia','Interpretar sonhos','Música'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🎶',q:'Quem escreveu os Salmos?',o:['Moisés','Noé','Davi','Salomão'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🐟',q:'Quantas pessoas Jesus alimentou?',o:['500','1000','5000','10000'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌊',q:'O que Jesus acalmou?',o:['Terremoto','Tempestade','Praga','Vulcão'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'✝️',q:'Em quantos dias Jesus ressuscitou?',o:['1','2','3','4'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌍',q:'Qual é o primeiro livro da Bíblia?',o:['Êxodo','Salmos','Gênesis','João'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌈',q:'O que Deus colocou após o dilúvio?',o:['Estrela','Arco-íris','Nuvem','Sol'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'⭐',q:'Qual anjo anunciou o nascimento de Jesus?',o:['Miguel','Gabriel','Rafael','Uriel'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'🐟',q:'Jonas foi engolido por qual animal?',o:['Baleia','Tubarão','Peixe grande','Golfinho'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌾',q:'Como se chamava o pai de José?',o:['Abraão','Isaque','Jacó','Noé'],a:2},
+  {cat:'bib',badge:'📖 Bíblia',em:'🎶',q:'Qual instrumento Davi tocava?',o:['Flauta','Harpa','Trombeta','Tambor'],a:1},
+  {cat:'bib',badge:'📖 Bíblia',em:'🌿',q:'O que a pomba de Noé trouxe?',o:['Uma flor','Ramo de oliveira','Folha de palmeira','Um fruto'],a:1},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🇧🇷',q:'Qual é a capital do Brasil?',o:['São Paulo','Rio de Janeiro','Brasília','Salvador'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌎',q:'Quantos continentes tem a Terra?',o:['5','6','7','8'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌊',q:'Quantos oceanos existem?',o:['3','4','5','6'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🏔️',q:'Qual é a montanha mais alta do mundo?',o:['Andes','Alpes','Everest','Kilimanjaro'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🇧🇷',q:'A Amazônia está em qual país?',o:['Argentina','Peru','Brasil','Colômbia'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🗺️',q:'Quantos estados tem o Brasil?',o:['24','25','26','27'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌍',q:'Qual é o maior país do mundo?',o:['EUA','China','Rússia','Brasil'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌊',q:'Qual é o maior oceano?',o:['Atlântico','Índico','Ártico','Pacífico'],a:3},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🇫🇷',q:'Qual é a capital da França?',o:['Roma','Berlim','Paris','Madrid'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🗺️',q:'Rosa dos ventos tem quantas direções principais?',o:['2','3','4','5'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌿',q:'Quantos biomas tem o Brasil?',o:['4','5','6','7'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌎',q:'O Brasil fica em qual continente?',o:['Europa','América do Sul','África','Ásia'],a:1},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🏙️',q:'Qual é a maior cidade do Brasil?',o:['Rio de Janeiro','Brasília','São Paulo','Salvador'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌊',q:'Qual é o maior rio do Brasil?',o:['Paraná','São Francisco','Amazonas','Tocantins'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🏔️',q:'O continente mais frio é:',o:['Ártico','Antártida','Europa','Ásia'],a:1},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌍',q:'Qual é a capital do Japão?',o:['Pequim','Seul','Tóquio','Bangkok'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌎',q:'Quantos países tem a América do Sul?',o:['10','11','12','13'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🇧🇷',q:'Qual é o maior bioma do Brasil?',o:['Cerrado','Caatinga','Amazônia','Pantanal'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌍',q:'Qual é a capital da Alemanha?',o:['Viena','Bruxelas','Berlim','Zurique'],a:2},
+  {cat:'geo',badge:'🗺️ Geografia',em:'🌊',q:'O Oceano Atlântico banha qual lado do Brasil?',o:['Oeste','Norte','Leste','Sul'],a:2},
+];
+
+// ═══════════════════ QUIZ LOGIC ═══════════════════
+const CAT_COLS={port:'#FF6B9D',math:'#4776E6',eng:'#11998e',sci:'#f7971e',bib:'#6a3093',geo:'#c0392b'};
+let qFilter='all',qPool=[],qIdx=0,qScore=0,qAnswered=false,qCorrect=0,qWrong=0;
+function setFilter(f,btn){qFilter=f;document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');restartQuiz();}
+function shuffle(a){return[...a].sort(()=>Math.random()-.5);}
+function restartQuiz(){
+  const pool=qFilter==='all'?QS:QS.filter(q=>q.cat===qFilter);
+  qPool=shuffle(pool).slice(0,10);qIdx=0;qScore=0;qCorrect=0;qWrong=0;
+  document.getElementById('score-disp').textContent=0;
+  document.getElementById('q-tot').textContent=qPool.length;
+  document.getElementById('q-result').classList.remove('show');
+  document.getElementById('q-card').style.display='block';loadQ();
+}
+function loadQ(){
+  if(qIdx>=qPool.length){endQuiz();return;}
+  qAnswered=false;
+  const q=qPool[qIdx],col=CAT_COLS[q.cat]||'#6A82FB';
+  document.getElementById('q-badge').textContent=q.badge;document.getElementById('q-badge').style.background=col;
+  document.getElementById('q-emoji').textContent=q.em;document.getElementById('q-question').textContent=q.q;
+  const opts=document.getElementById('q-opts');opts.innerHTML='';
+  q.o.forEach((op,i)=>{const b=document.createElement('button');b.className='q-opt';b.textContent=op;b.onclick=()=>pickAnswer(i,q.a);opts.appendChild(b);});
+  const pct=((qIdx+1)/qPool.length*100).toFixed(0);
+  document.getElementById('prog-bar').style.width=pct+'%';document.getElementById('q-cur').textContent=qIdx+1;
+  const fb=document.getElementById('q-fb');fb.classList.remove('show','ok','fail');document.getElementById('q-next').classList.remove('show');
+}
+function pickAnswer(chosen,correct){
+  if(qAnswered)return;qAnswered=true;
+  document.querySelectorAll('.q-opt').forEach((o,i)=>{o.classList.add('disabled');if(i===correct)o.classList.add('correct');else if(i===chosen)o.classList.add('wrong');});
+  const fb=document.getElementById('q-fb');
+  if(chosen===correct){
+    qScore+=10;qCorrect++;document.getElementById('score-disp').textContent=qScore;
+    fb.textContent='🎉 Muito bem! Resposta correta! +10 pts!';fb.className='q-fb show ok';
+    speak('Muito bem! Resposta correta!');spawnCoin('⭐');addReward(2,2,15,'Quiz: acerto');
+  }else{
+    qWrong++;fb.textContent='😢 Ops! A resposta certa era: "'+qPool[qIdx].o[correct]+'"';fb.className='q-fb show fail';
+    speak('Ops! Tente de novo na próxima!');addReward(0,0,3,'Quiz: tentativa');
+  }
+  document.getElementById('q-next').classList.add('show');
+}
+function nextQ(){qIdx++;loadQ();}
+function endQuiz(){
+  document.getElementById('q-card').style.display='none';document.getElementById('q-result').classList.add('show');
+  P.quizzesDone++;P.correctAnswers+=qCorrect;P.wrongAnswers+=qWrong;P.modules.quiz=(P.modules.quiz||0)+1;
+  const pct=qScore/(qPool.length*10)*100;
+  let emoji,title;
+  if(pct>=90){emoji='🏆';title='Incrível! Você é um Gênio!';}
+  else if(pct>=70){emoji='⭐';title='Muito Bem! Parabéns!';}
+  else if(pct>=50){emoji='😊';title='Bom! Continue estudando!';}
+  else{emoji='💪';title='Continue tentando!';}
+  if(pct===100&&!P.earnedMedals.includes('perfect')){P.earnedMedals.push('perfect');spawnCoin('💎');}
+  document.getElementById('res-emoji').textContent=emoji;document.getElementById('res-title').textContent=title;
+  document.getElementById('res-score').textContent='Você fez '+qScore+' de '+(qPool.length*10)+' pontos! ('+pct.toFixed(0)+'%)';
+  speak(title+'! Você fez '+qScore+' pontos!');addReward(5,5,20,'Quiz completo: '+qScore+' pts');
+  checkMedals();checkCerts();saveProfile();
+}
+
+// ═══════════════════ LOGOUT & RESET ═══════════════════
+async function doLogout(){
+  if(confirm('Deseja sair da conta? 👋')){
+    try {
+      await sb.auth.signOut();
+    } catch(e){ console.log('signOut error:', e); }
+    window.location.replace('index.html');
+  }
+}
+
+function confirmReset(){
+  if(confirm('⚠️ Tem certeza que deseja reiniciar todo o progresso? Esta ação não pode ser desfeita!')){
+    localStorage.removeItem(SAVE_KEY);location.reload();
+  }
+}
+
+// ═══════════════════ INIT ═══════════════════
+function init(){
+  buildSetup();buildAlphabet();buildSilabas();buildNumbers();buildShapes();buildOps();buildMedidas();
+  buildEnglish();buildSci();buildGeo();buildBible();
+  const saved=loadSave();
+  if(saved&&saved.name){
+    P=saved;
+    launchApp();
+    restartQuiz();
+    showSection('fonetica'); // perfil existente -> vai direto para as atividades
+    toast(`👋 Bem-vindo de volta, ${P.name}!`);
+  }
+  else{document.getElementById('screen-setup').classList.add('active');restartQuiz();}
+}
+window.addEventListener('DOMContentLoaded',init);
+document.getElementById('story-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('cert-modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+window.addEventListener('beforeunload',()=>{if(P){const mins=Math.floor((Date.now()-P.sessionStart)/60000);if(mins>0){P.minutesStudied+=mins;saveProfile();}}});
+</script>
+</body>
+</html>
